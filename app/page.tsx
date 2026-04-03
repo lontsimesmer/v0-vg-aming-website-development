@@ -294,10 +294,15 @@ export default function VGamingPage() {
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <span className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold">
-                <span className="text-secondary">V</span>
-                <span className="text-primary italic">Gaming</span>
-              </span>
+              <a href="#home">
+                <Image
+                  src="/images/vgaming-logo.png"
+                  alt="VGaming Logo"
+                  width={120}
+                  height={50}
+                  className="h-10 md:h-12 w-auto"
+                />
+              </a>
             </div>
 
             {/* Desktop Navigation */}
@@ -364,15 +369,20 @@ export default function VGamingPage() {
         {/* Hero Content */}
         <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
           <div className="animate-fade-in-up">
-            <span className="inline-block px-4 py-2 rounded-full bg-primary/20 border border-primary/30 text-primary text-sm md:text-base mb-6">
+            <span className="inline-block px-5 py-2.5 rounded-full bg-secondary/40 backdrop-blur-sm border border-primary/40 text-primary text-sm md:text-base mb-6 font-semibold tracking-wide shadow-lg">
               BATTLE ARENA - COMING SOON
             </span>
           </div>
           
-          <h1 className="font-[family-name:var(--font-orbitron)] text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-6 animate-fade-in-up animation-delay-200">
-            <span className="text-secondary">V</span>
-            <span className="text-primary italic">Gaming</span>
-          </h1>
+          <div className="mb-6 animate-fade-in-up animation-delay-200">
+            <Image
+              src="/images/vgaming-logo.png"
+              alt="VGaming Logo"
+              width={400}
+              height={160}
+              className="h-24 sm:h-32 md:h-40 lg:h-48 w-auto mx-auto drop-shadow-2xl"
+            />
+          </div>
           
           <h2 className="font-[family-name:var(--font-orbitron)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 animate-fade-in-up animation-delay-300">
             {t.hero.title}
@@ -385,7 +395,7 @@ export default function VGamingPage() {
           <div className="animate-fade-in-up animation-delay-500">
             <a
               href="#challenge"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground font-bold text-lg rounded-full hover:bg-primary/90 hover:scale-105 transition-all duration-300 shadow-lg shadow-primary/25"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-secondary font-bold text-lg rounded-full hover:bg-primary/90 hover:scale-105 transition-all duration-300 shadow-lg shadow-primary/30 border-2 border-primary/50"
             >
               {t.hero.cta}
               <ChevronDown className="w-5 h-5 animate-bounce" />
@@ -408,7 +418,7 @@ export default function VGamingPage() {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Text Content */}
             <div className="scroll-animate opacity-0 translate-y-10 transition-all duration-700">
-              <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+              <span className="inline-block px-4 py-2 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
                 {t.about.subtitle}
               </span>
               <h2 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
@@ -423,19 +433,19 @@ export default function VGamingPage() {
               
               {/* Stats */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-                <div className="text-center p-4 rounded-xl bg-primary/5 border border-primary/10">
+                <div className="text-center p-4 rounded-xl bg-primary/10 border border-primary/20 hover:border-primary/40 transition-colors">
                   <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">5K+</div>
                   <div className="text-sm text-foreground/60">{t.about.stats.visitors}</div>
                 </div>
-                <div className="text-center p-4 rounded-xl bg-secondary/5 border border-secondary/10">
-                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-secondary">50+</div>
+                <div className="text-center p-4 rounded-xl bg-secondary/20 border border-secondary/30 hover:border-secondary/50 transition-colors">
+                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">50+</div>
                   <div className="text-sm text-foreground/60">{t.about.stats.games}</div>
                 </div>
-                <div className="text-center p-4 rounded-xl bg-accent/5 border border-accent/10">
-                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-accent">100+</div>
+                <div className="text-center p-4 rounded-xl bg-primary/10 border border-primary/20 hover:border-primary/40 transition-colors">
+                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">100+</div>
                   <div className="text-sm text-foreground/60">{t.about.stats.events}</div>
                 </div>
-                <div className="text-center p-4 rounded-xl bg-primary/5 border border-primary/10">
+                <div className="text-center p-4 rounded-xl bg-secondary/20 border border-secondary/30 hover:border-secondary/50 transition-colors">
                   <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">3+</div>
                   <div className="text-sm text-foreground/60">{t.about.stats.years}</div>
                 </div>
@@ -470,7 +480,7 @@ export default function VGamingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-16 scroll-animate opacity-0 translate-y-10 transition-all duration-700">
-            <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+            <span className="inline-block px-4 py-2 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
               {t.services.subtitle}
             </span>
             <h2 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-4xl lg:text-5xl font-bold">
@@ -534,15 +544,15 @@ export default function VGamingPage() {
       {/* Challenge Registration Section */}
       <section id="challenge" className="py-20 md:py-32 bg-gradient-to-b from-card to-background relative overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2322c55e' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a227' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
             {/* Info Section */}
             <div className="scroll-animate opacity-0 translate-y-10 transition-all duration-700">
-              <span className="inline-block px-4 py-2 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-4">
+              <span className="inline-block px-4 py-2 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
                 {t.challenge.subtitle}
               </span>
               <h2 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
@@ -553,19 +563,18 @@ export default function VGamingPage() {
               </p>
 
               {/* Prize Card */}
-              <div className="relative rounded-2xl overflow-hidden mb-8">
+              <div className="relative rounded-2xl overflow-hidden mb-8 h-[300px] md:h-[400px]">
                 <Image
                   src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-PUkFBrf1cSkbqMYDsG4XuxJfaLuoRc.png"
                   alt="Battle Arena Poster"
-                  width={600}
-                  height={400}
-                  className="object-cover w-full h-[300px] md:h-[400px]"
+                  fill
+                  className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <div className="text-center">
-                    <p className="text-foreground/70 text-sm mb-2">{t.challenge.prize}</p>
-                    <p className="font-[family-name:var(--font-orbitron)] text-4xl md:text-5xl font-black text-secondary">
+                  <div className="text-center bg-secondary/80 backdrop-blur-sm rounded-xl py-4 px-6 border border-primary/30">
+                    <p className="text-foreground/90 text-sm mb-2">{t.challenge.prize}</p>
+                    <p className="font-[family-name:var(--font-orbitron)] text-4xl md:text-5xl font-black text-primary drop-shadow-lg">
                       3,000,000 <span className="text-xl">FCFA</span>
                     </p>
                   </div>
@@ -810,16 +819,19 @@ export default function VGamingPage() {
       </section>
 
       {/* Footer */}
-      <footer id="contact" className="bg-background border-t border-border">
+      <footer id="contact" className="bg-secondary/30 border-t border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
             {/* Logo & Tagline */}
             <div className="sm:col-span-2 lg:col-span-1">
               <div className="mb-4">
-                <span className="font-[family-name:var(--font-orbitron)] text-2xl font-bold">
-                  <span className="text-secondary">V</span>
-                  <span className="text-primary italic">Gaming</span>
-                </span>
+                <Image
+                  src="/images/vgaming-logo.png"
+                  alt="VGaming Logo"
+                  width={120}
+                  height={50}
+                  className="h-12 w-auto"
+                />
               </div>
               <p className="text-foreground/60 mb-6">{t.footer.tagline}</p>
               {/* Social Media */}
@@ -979,16 +991,16 @@ function ServiceCard({
           className="object-cover transition-transform duration-700 group-hover:scale-110"
         />
         {/* Default Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/40 to-transparent" />
         {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-primary/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/90 to-secondary/70 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         
         {/* Content */}
         <div className="absolute inset-0 flex flex-col justify-end p-6">
-          <h3 className="font-[family-name:var(--font-orbitron)] text-xl font-bold text-foreground mb-2 group-hover:text-primary-foreground transition-colors">
+          <h3 className="font-[family-name:var(--font-orbitron)] text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
             {title}
           </h3>
-          <p className="text-foreground/70 text-sm leading-relaxed opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 group-hover:text-primary-foreground/90 transition-all duration-300">
+          <p className="text-foreground/80 text-sm leading-relaxed opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 group-hover:text-foreground transition-all duration-300">
             {description}
           </p>
         </div>

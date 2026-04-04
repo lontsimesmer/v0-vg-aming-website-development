@@ -1,6 +1,30 @@
 # VGaming Battle Arena - Webhook Field Mapping Reference
 
-## Webhook Endpoint
+## Architecture
+
+The form submission follows this flow:
+
+```
+[User fills form] → [Submit button clicked] → [Client-side validation]
+                                                      ↓
+                                          [POST to /api/register]
+                                                      ↓
+                                          [Server-side API Route]
+                                                      ↓
+                                          [POST to GHL Webhook]
+                                                      ↓
+                                          [GHL Workflow Triggered]
+                                                      ↓
+                                          [User redirected to /thank-you]
+```
+
+## API Endpoint (Internal)
+```
+POST /api/register
+```
+This server-side endpoint handles validation and forwards data to GHL.
+
+## GHL Webhook Endpoint
 ```
 POST https://services.leadconnectorhq.com/hooks/B5v2sbcLstGABgVo9xIG/webhook-trigger/f62f1f2e-c88f-404a-8431-e9a791fecb6a
 ```
@@ -157,13 +181,32 @@ Content-Type: application/json
 
 ## Notes
 
-1. **Photo Handling:** The photo is converted to Base64 on the client side before submission. Large images may result in large payloads.
+1. **Server-Side API:** The form submits to `/api/register` which then forwards the data to GHL. This avoids CORS issues and provides proper error handling.
 
-2. **CORS Mode:** The request is sent with `mode: "no-cors"` to handle cross-origin restrictions with the webhook endpoint.
+2. **Photo Handling:** The photo is converted to Base64 on the client side before submission. Large images may result in large payloads.
 
-3. **Redirect:** After successful submission, users are redirected to `/thank-you` page.
+3. **GHL Workflow:** The webhook triggers your GHL workflow automatically. Make sure to map the fields in your GHL workflow to contact/custom fields.
 
-4. **Error Handling:** If submission fails, users see an alert message in their selected language.
+4. **Redirect:** After successful submission, users are redirected to `/thank-you` page.
+
+5. **Error Handling:** If submission fails, users see an alert message in their selected language. Server errors are logged for debugging.
+
+## GHL Field Mapping Recommendations
+
+| Webhook Field | GHL Contact Field | Notes |
+|---------------|-------------------|-------|
+| `firstName` | First Name | Auto-extracted from fullName |
+| `lastName` | Last Name | Auto-extracted from fullName |
+| `phone` | Phone | Standard contact field |
+| `fullName` | Full Name (Custom) | Or use firstName/lastName |
+| `pseudo` | Custom Field | Create as `vgaming_pseudo` |
+| `birthDate` | Custom Field | Create as `vgaming_birth_date` |
+| `birthPlace` | Custom Field | Create as `vgaming_birth_place` |
+| `howHeard` | Custom Field | Create as `vgaming_how_heard` |
+| `level` | Custom Field | Create as `vgaming_player_level` |
+| `hasTeam` | Custom Field | Create as `vgaming_has_team` |
+| `categories` | Custom Field | Create as `vgaming_categories` |
+| `source` | Lead Source | Always "VGaming Battle Arena Registration" |
 
 ---
 

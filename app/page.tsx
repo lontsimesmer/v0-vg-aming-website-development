@@ -338,17 +338,22 @@ export default function VGamingPage() {
         submittedAt: new Date().toISOString()
       }
 
-      // Send to webhook
-      await fetch("https://services.leadconnectorhq.com/hooks/B5v2sbcLstGABgVo9xIG/webhook-trigger/f62f1f2e-c88f-404a-8431-e9a791fecb6a", {
+      // Send to server-side API route which triggers GHL webhook
+      const response = await fetch("/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(webhookData),
-        mode: "no-cors"
+        body: JSON.stringify(webhookData)
       })
 
-      // Redirect to thank you page
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Registration failed")
+      }
+
+      // Redirect to thank you page on success
       window.location.href = "/thank-you"
     } catch (error) {
       console.error("Submission error:", error)

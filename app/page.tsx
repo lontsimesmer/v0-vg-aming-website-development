@@ -73,6 +73,7 @@ const translations = {
         birthDate: "Date of Birth",
         birthPlace: "Place of Birth",
         howHeard: "How did you hear about VGaming and this tournament?",
+        howHeardOther: "Please specify",
         photo: "Photo (visible face) - Will be used for match announcements",
         uploadPhoto: "Click to upload or drag and drop",
         phone: "Phone Number",
@@ -82,6 +83,8 @@ const translations = {
         hasTeam: "Do you have an Ultimate Team?",
         yes: "Yes",
         no: "No",
+        categories: "Select your categories",
+        categoriesHint: "You can select multiple categories",
         submit: "Register Now",
         submitting: "Registering..."
       },
@@ -90,6 +93,12 @@ const translations = {
         friend: "Friend / Word of Mouth",
         event: "Previous Event",
         other: "Other"
+      },
+      categoryOptions: {
+        fc26: "FC26",
+        billiard: "Billiard",
+        checkers: "Jeu de Dames",
+        chess: "Echecs"
       }
     },
     footer: {
@@ -169,6 +178,7 @@ const translations = {
         birthDate: "Date de Naissance",
         birthPlace: "Lieu de Naissance",
         howHeard: "Comment avez-vous entendu parler de V Gaming et du tournoi?",
+        howHeardOther: "Veuillez préciser",
         photo: "Photo (visage visible) - Sera utilisée pour annoncer les confrontations",
         uploadPhoto: "Cliquez pour télécharger ou glisser-déposer",
         phone: "Numéro de Téléphone",
@@ -178,6 +188,8 @@ const translations = {
         hasTeam: "As-tu une équipe Ultimate Team?",
         yes: "Oui",
         no: "Non",
+        categories: "Sélectionnez vos catégories",
+        categoriesHint: "Vous pouvez sélectionner plusieurs catégories",
         submit: "S'inscrire Maintenant",
         submitting: "Inscription en cours..."
       },
@@ -186,6 +198,12 @@ const translations = {
         friend: "Ami / Bouche à oreille",
         event: "Événement précédent",
         other: "Autre"
+      },
+      categoryOptions: {
+        fc26: "FC26",
+        billiard: "Billard",
+        checkers: "Jeu de Dames",
+        chess: "Échecs"
       }
     },
     footer: {
@@ -211,10 +229,12 @@ export default function VGamingPage() {
     birthDate: "",
     birthPlace: "",
     howHeard: "",
+    howHeardOther: "",
     photo: null as File | null,
     phone: "",
     level: "",
-    hasTeam: ""
+    hasTeam: "",
+    categories: [] as string[]
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
@@ -277,13 +297,65 @@ export default function VGamingPage() {
     }
   }
 
+  const handleCategoryChange = (category: string) => {
+    setFormData(prev => ({
+      ...prev,
+      categories: prev.categories.includes(category)
+        ? prev.categories.filter(c => c !== category)
+        : [...prev.categories, category]
+    }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    // Simulate submission
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    alert(lang === "en" ? "Registration successful! We will contact you soon." : "Inscription réussie! Nous vous contacterons bientôt.")
-    setIsSubmitting(false)
+    
+    try {
+      // Convert photo to base64 if exists
+      let photoBase64 = ""
+      if (formData.photo) {
+        const reader = new FileReader()
+        photoBase64 = await new Promise((resolve) => {
+          reader.onloadend = () => resolve(reader.result as string)
+          reader.readAsDataURL(formData.photo as File)
+        })
+      }
+
+      // Prepare data for webhook
+      const webhookData = {
+        fullName: formData.fullName,
+        pseudo: formData.pseudo,
+        birthDate: formData.birthDate,
+        birthPlace: formData.birthPlace,
+        howHeard: formData.howHeard === "other" ? formData.howHeardOther : formData.howHeard,
+        howHeardSource: formData.howHeard,
+        photo: photoBase64,
+        phone: formData.phone,
+        level: formData.level,
+        hasTeam: formData.hasTeam,
+        categories: formData.categories.join(", "),
+        language: lang,
+        submittedAt: new Date().toISOString()
+      }
+
+      // Send to webhook
+      await fetch("https://services.leadconnectorhq.com/hooks/B5v2sbcLstGABgVo9xIG/webhook-trigger/f62f1f2e-c88f-404a-8431-e9a791fecb6a", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(webhookData),
+        mode: "no-cors"
+      })
+
+      // Redirect to thank you page
+      window.location.href = "/thank-you"
+    } catch (error) {
+      console.error("Submission error:", error)
+      alert(lang === "en" ? "An error occurred. Please try again." : "Une erreur s'est produite. Veuillez réessayer.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -298,9 +370,9 @@ export default function VGamingPage() {
                 <Image
                   src="/images/vgaming-logo.png"
                   alt="VGaming Logo"
-                  width={120}
-                  height={50}
-                  className="h-10 md:h-12 w-auto"
+                  width={160}
+                  height={65}
+                  className="h-14 md:h-16 w-auto"
                 />
               </a>
             </div>
@@ -378,9 +450,9 @@ export default function VGamingPage() {
             <Image
               src="/images/vgaming-logo.png"
               alt="VGaming Logo"
-              width={400}
-              height={160}
-              className="h-24 sm:h-32 md:h-40 lg:h-48 w-auto mx-auto drop-shadow-2xl"
+              width={500}
+              height={200}
+              className="h-32 sm:h-40 md:h-52 lg:h-64 w-auto mx-auto drop-shadow-2xl"
             />
           </div>
           
@@ -498,13 +570,13 @@ export default function VGamingPage() {
               delay={0}
             />
             
-            {/* Video Games */}
-            <ServiceCard
-              image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-PUkFBrf1cSkbqMYDsG4XuxJfaLuoRc.png"
-              title={t.services.items.videogames.title}
-              description={t.services.items.videogames.description}
-              delay={100}
-            />
+{/* Video Games */}
+                <ServiceCard
+                  image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-O7yIThYm82gs7P07uFr8NW4TU5bNkD.png"
+                  title={t.services.items.videogames.title}
+                  description={t.services.items.videogames.description}
+                  delay={100}
+                />
             
             {/* Chess */}
             <ServiceCard
@@ -681,7 +753,7 @@ export default function VGamingPage() {
                     <select
                       required
                       value={formData.howHeard}
-                      onChange={(e) => setFormData({ ...formData, howHeard: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, howHeard: e.target.value, howHeardOther: "" })}
                       className="w-full px-4 py-3 rounded-xl bg-input border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground"
                     >
                       <option value="">--</option>
@@ -690,6 +762,51 @@ export default function VGamingPage() {
                       <option value="event">{t.challenge.howHeardOptions.event}</option>
                       <option value="other">{t.challenge.howHeardOptions.other}</option>
                     </select>
+                  </div>
+
+                  {/* How Heard Other - Conditional */}
+                  {formData.howHeard === "other" && (
+                    <div className="animate-fade-in">
+                      <label className="block text-sm font-medium text-foreground/80 mb-2">
+                        {t.challenge.form.howHeardOther} *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.howHeardOther}
+                        onChange={(e) => setFormData({ ...formData, howHeardOther: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl bg-input border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground placeholder:text-muted-foreground"
+                        placeholder={lang === "en" ? "Please specify how you heard about us" : "Veuillez préciser comment vous avez entendu parler de nous"}
+                      />
+                    </div>
+                  )}
+
+                  {/* Categories Selection */}
+                  <div>
+                    <label className="block text-sm font-medium text-foreground/80 mb-2">
+                      {t.challenge.form.categories} *
+                    </label>
+                    <p className="text-xs text-muted-foreground mb-3">{t.challenge.form.categoriesHint}</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {Object.entries(t.challenge.categoryOptions).map(([key, label]) => (
+                        <label
+                          key={key}
+                          className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                            formData.categories.includes(key)
+                              ? "bg-primary/20 border-primary"
+                              : "bg-input border-border hover:border-primary/50"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={formData.categories.includes(key)}
+                            onChange={() => handleCategoryChange(key)}
+                            className="w-5 h-5 text-primary accent-primary"
+                          />
+                          <span className="text-foreground/80 text-sm font-medium">{label}</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
 
                   {/* Photo Upload */}
@@ -828,9 +945,9 @@ export default function VGamingPage() {
                 <Image
                   src="/images/vgaming-logo.png"
                   alt="VGaming Logo"
-                  width={120}
-                  height={50}
-                  className="h-12 w-auto"
+                  width={160}
+                  height={65}
+                  className="h-16 w-auto"
                 />
               </div>
               <p className="text-foreground/60 mb-6">{t.footer.tagline}</p>

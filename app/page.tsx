@@ -239,7 +239,7 @@ export default function VGamingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  
+
   const t = translations[lang]
 
   // Hero overlay animation
@@ -250,7 +250,7 @@ export default function VGamingPage() {
         setHeroOverlayOpacity(0.7)
       }, 3000)
     }
-    
+
     animateOverlay()
     const interval = setInterval(animateOverlay, 8000)
     return () => clearInterval(interval)
@@ -309,7 +309,7 @@ export default function VGamingPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
+
     try {
       // Convert photo to base64 if exists
       let photoBase64 = ""
@@ -430,7 +430,7 @@ export default function VGamingPage() {
             priority
           />
           {/* Animated Overlay */}
-          <div 
+          <div
             className="absolute inset-0 bg-black transition-opacity duration-[2000ms] ease-in-out"
             style={{ opacity: heroOverlayOpacity }}
           />
@@ -439,13 +439,13 @@ export default function VGamingPage() {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
+        <div className="relative z-10 text-center px-3 max-w-5xl mx-auto">
           <div className="animate-fade-in-up">
             <span className="inline-block px-5 py-2.5 rounded-full bg-secondary/40 backdrop-blur-sm border border-primary/40 text-primary text-sm md:text-base mb-6 font-semibold tracking-wide shadow-lg">
               BATTLE ARENA - COMING SOON
             </span>
           </div>
-          
+
           <div className="mb-6 animate-fade-in-up animation-delay-200">
             <Image
               src="/images/vgaming-logo.png"
@@ -455,15 +455,15 @@ export default function VGamingPage() {
               className="h-32 sm:h-40 md:h-52 lg:h-64 w-auto mx-auto drop-shadow-2xl"
             />
           </div>
-          
+
           <h2 className="font-[family-name:var(--font-orbitron)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 animate-fade-in-up animation-delay-300">
             {t.hero.title}
           </h2>
-          
+
           <p className="text-xl md:text-2xl text-foreground/80 mb-10 animate-fade-in-up animation-delay-400">
             {t.hero.subtitle}
           </p>
-          
+
           <div className="animate-fade-in-up animation-delay-500">
             <a
               href="#challenge"
@@ -502,7 +502,7 @@ export default function VGamingPage() {
               <p className="text-foreground/70 text-lg leading-relaxed mb-8">
                 {t.about.description2}
               </p>
-              
+
               {/* Stats */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
                 <div className="text-center p-4 rounded-xl bg-primary/10 border border-primary/20 hover:border-primary/40 transition-colors">
@@ -569,15 +569,15 @@ export default function VGamingPage() {
               description={t.services.items.vr.description}
               delay={0}
             />
-            
-{/* Video Games */}
-                <ServiceCard
-                  image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-O7yIThYm82gs7P07uFr8NW4TU5bNkD.png"
-                  title={t.services.items.videogames.title}
-                  description={t.services.items.videogames.description}
-                  delay={100}
-                />
-            
+
+            {/* Video Games */}
+            <ServiceCard
+              image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-O7yIThYm82gs7P07uFr8NW4TU5bNkD.png"
+              title={t.services.items.videogames.title}
+              description={t.services.items.videogames.description}
+              delay={100}
+            />
+
             {/* Chess */}
             <ServiceCard
               image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-7DlvAgqA4voh9T32RrJiOogqaN1OKg.png"
@@ -585,7 +585,7 @@ export default function VGamingPage() {
               description={t.services.items.chess.description}
               delay={200}
             />
-            
+
             {/* Billiards */}
             <ServiceCard
               image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image.png-GTjVApev14wO3nvTAkslTg5XcpuP79.jpeg"
@@ -593,7 +593,7 @@ export default function VGamingPage() {
               description={t.services.items.billiards.description}
               delay={300}
             />
-            
+
             {/* Foosball */}
             <ServiceCard
               image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image.png-ZDUcuTth4or1p3YFUgOswlSusEoNsH.jpeg"
@@ -601,7 +601,7 @@ export default function VGamingPage() {
               description={t.services.items.foosball.description}
               delay={400}
             />
-            
+
             {/* Food & Bar */}
             <ServiceCard
               image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-nzZHsXjdtbHwOQRYF4TX3AisJOVK1f.png"
@@ -791,11 +791,10 @@ export default function VGamingPage() {
                       {Object.entries(t.challenge.categoryOptions).map(([key, label]) => (
                         <label
                           key={key}
-                          className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                            formData.categories.includes(key)
+                          className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${formData.categories.includes(key)
                               ? "bg-primary/20 border-primary"
                               : "bg-input border-border hover:border-primary/50"
-                          }`}
+                            }`}
                         >
                           <input
                             type="checkbox"
@@ -1084,19 +1083,19 @@ export default function VGamingPage() {
 }
 
 // Service Card Component
-function ServiceCard({ 
-  image, 
-  title, 
-  description, 
-  delay 
-}: { 
+function ServiceCard({
+  image,
+  title,
+  description,
+  delay
+}: {
   image: string
   title: string
   description: string
   delay: number
 }) {
   return (
-    <div 
+    <div
       className="scroll-animate opacity-0 translate-y-10 transition-all duration-700 group"
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -1111,7 +1110,7 @@ function ServiceCard({
         <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/40 to-transparent" />
         {/* Hover Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/90 to-secondary/70 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        
+
         {/* Content */}
         <div className="absolute inset-0 flex flex-col justify-end p-6">
           <h3 className="font-[family-name:var(--font-orbitron)] text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">

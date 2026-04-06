@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { Menu, X, Globe, MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, ChevronDown, Upload } from "lucide-react"
+import { createClient } from "@/lib/supabase/client"
 
 // Translations
 const translations = {
@@ -321,8 +322,44 @@ export default function VGamingPage() {
         })
       }
 
-      // Prepare data for webhook
-      const webhookData = {
+      // Initialize Supabase client
+      const supabase = createClient()
+      const GHL_WEBHOOK_URL = "https://services.leadconnectorhq.com/hooks/B5v2sbcLstGABgVo9xIG/webhook-trigger/f62f1f2e-c88f-404a-8431-e9a791fecb6a"
+
+      // Prepare enrollment data for database
+      const enrollmentRecord = {
+        full_name: formData.fullName,
+        pseudo: formData.pseudo,
+        birth_date: formData.birthDate,
+        birth_place: formData.birthPlace,
+        how_heard: formData.howHeard === "other" ? formData.howHeardOther : formData.howHeard,
+        how_heard_source: formData.howHeard,
+        photo_url: photoBase64 ? "photo_attached" : null,
+        phone: formData.phone,
+        level: formData.level,
+        has_team: formData.hasTeam,
+        categories: formData.categories.join(", "),
+        language: lang,
+      }
+
+      console.log("[v0] Saving enrollment to database...")
+      
+      // Insert enrollment into database
+      const { data: enrollment, error: enrollmentError } = await supabase
+        .from("enrollments")
+        .insert(enrollmentRecord)
+        .select()
+        .single()
+
+      if (enrollmentError) {
+        console.error("[v0] Enrollment insert error:", enrollmentError)
+        throw new Error("Failed to save enrollment")
+      }
+
+      console.log("[v0] Enrollment saved:", enrollment.id)
+
+      // Prepare webhook payload
+      const webhookPayload = {
         fullName: formData.fullName,
         pseudo: formData.pseudo,
         birthDate: formData.birthDate,
@@ -335,18 +372,47 @@ export default function VGamingPage() {
         hasTeam: formData.hasTeam,
         categories: formData.categories.join(", "),
         language: lang,
-        submittedAt: new Date().toISOString()
+        submittedAt: new Date().toISOString(),
+        enrollmentId: enrollment.id,
       }
 
-      // Send to webhook
-      await fetch("https://services.leadconnectorhq.com/hooks/B5v2sbcLstGABgVo9xIG/webhook-trigger/f62f1f2e-c88f-404a-8431-e9a791fecb6a", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(webhookData),
-        mode: "no-cors"
+      console.log("[v0] Sending to GHL webhook...")
+
+      // Send to GHL webhook (no-cors mode for cross-origin)
+      let ghlSuccess = false
+      let ghlResponseStatus = "unknown"
+      let ghlErrorMessage = ""
+
+      try {
+        await fetch(GHL_WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(webhookPayload),
+          mode: "no-cors"
+        })
+        ghlSuccess = true
+        ghlResponseStatus = "sent (no-cors)"
+        console.log("[v0] GHL webhook sent successfully")
+      } catch (webhookError) {
+        ghlErrorMessage = webhookError instanceof Error ? webhookError.message : "Unknown webhook error"
+        console.error("[v0] GHL webhook error:", ghlErrorMessage)
+      }
+
+      // Log GHL execution
+      console.log("[v0] Logging GHL execution...")
+      await supabase.from("ghl_execution_logs").insert({
+        enrollment_id: enrollment.id,
+        webhook_url: GHL_WEBHOOK_URL,
+        request_payload: webhookPayload,
+        response_status: ghlResponseStatus,
+        response_body: "",
+        success: ghlSuccess,
+        error_message: ghlErrorMessage || null,
       })
+
+      console.log("[v0] Enrollment complete, redirecting...")
 
       // Redirect to thank you page
       window.location.href = "/thank-you"

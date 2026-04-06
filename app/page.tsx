@@ -321,8 +321,8 @@ export default function VGamingPage() {
         })
       }
 
-      // Prepare data for webhook
-      const webhookData = {
+      // Prepare data for API
+      const enrollmentData = {
         fullName: formData.fullName,
         pseudo: formData.pseudo,
         birthDate: formData.birthDate,
@@ -335,18 +335,20 @@ export default function VGamingPage() {
         hasTeam: formData.hasTeam,
         categories: formData.categories.join(", "),
         language: lang,
-        submittedAt: new Date().toISOString()
       }
 
-      // Send to webhook
-      await fetch("https://services.leadconnectorhq.com/hooks/B5v2sbcLstGABgVo9xIG/webhook-trigger/f62f1f2e-c88f-404a-8431-e9a791fecb6a", {
+      // Send to our API which stores in DB and forwards to GHL
+      const response = await fetch("/api/enrollment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(webhookData),
-        mode: "no-cors"
+        body: JSON.stringify(enrollmentData),
       })
+
+      if (!response.ok) {
+        throw new Error("Enrollment failed")
+      }
 
       // Redirect to thank you page
       window.location.href = "/thank-you"

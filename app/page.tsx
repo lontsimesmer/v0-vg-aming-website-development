@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
-import { Menu, X, Globe, MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, ChevronDown, Upload } from "lucide-react"
+import { Menu, X, Globe, MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, ChevronDown, Upload, Calendar, Gamepad, MessageCircle, DollarSign, Target, Trophy } from "lucide-react"
 
 // Translations
 const translations = {
@@ -10,69 +10,66 @@ const translations = {
     nav: {
       home: "Home",
       about: "About",
-      services: "Services",
+      services: "Disciplines",
       challenge: "Challenge",
       contact: "Contact"
     },
     hero: {
-      title: "BATTLE ARENA",
-      subtitle: "The Ultimate Gaming Experience",
+      title: "VGaming Grand Tournament",
+      subtitle: "The game reaches a new level.",
+      eventInfo: {
+        location: "Yaoundé",
+        date: "May 16 & 17, 2026",
+        prize: "2,000,000 FCFA in Prizes"
+      },
       cta: "Join The Challenge",
       scroll: "Scroll to explore"
     },
     about: {
-      title: "About VGaming",
-      subtitle: "Where Gaming Meets Entertainment",
-      description: "VGaming is more than just a gaming center – it's a vibrant community hub where passion for games meets unforgettable experiences. Located in the heart of Bastos, Yaoundé, we offer a unique blend of virtual gaming, classic table games, and delicious cuisine in an electrifying atmosphere.",
-      description2: "From intense FIFA battles to strategic chess matches, from precision billiards shots to friendly foosball competitions, VGaming brings together gamers and entertainment lovers of all levels. Our state-of-the-art VR experiences transport you to new worlds, while our grilled specialties keep you energized for the next round.",
+      title: "The Concept",
+      subtitle: "A Competition. Pressure. Selection.",
+      description: "The VGaming Grand Tournament brings together the most determined players around two major disciplines: EA FC and Billiards.",
+      description2: "Here, it's not just about participating.",
+      description3: "It's about performing.",
+      description4: "It's about winning.",
       stats: {
-        visitors: "Happy Visitors",
-        games: "Games Available",
-        events: "Events Hosted",
+        visitors: "Competitors",
+        games: "Main Disciplines",
+        events: "Tournament Editions",
         years: "Years of Excellence"
       }
     },
     services: {
-      title: "Our Services",
-      subtitle: "Discover Our Activities",
+      title: "Tournament Disciplines",
+      subtitle: "Master Two Major Games",
       items: {
-        vr: {
-          title: "Virtual Reality",
-          description: "Immerse yourself in cutting-edge VR experiences with our state-of-the-art equipment and exciting game library."
-        },
-        videogames: {
-          title: "Video Games",
-          description: "Play the latest FIFA, and other popular titles on next-gen consoles in our comfortable gaming zones."
-        },
-        chess: {
-          title: "Chess & Checkers",
-          description: "Challenge your mind with classic strategy games. Perfect for beginners and masters alike."
+        eafc: {
+          title: "EA FC",
+          description: "64 players (amateurs & pros) | Single-elimination format + Super Final | Fast-paced and intense matches"
         },
         billiards: {
           title: "Billiards",
-          description: "Multiple professional-grade pool tables for casual games or competitive matches."
+          description: "64 pro players & 32 amateur players | Group stage + elimination | Precision, strategy, and composure"
         },
-        foosball: {
-          title: "Foosball",
-          description: "Fast-paced table football action! Perfect for quick games with friends."
-        },
-        food: {
-          title: "Grilled Skewers & Bar",
-          description: "Savor our delicious grilled specialties and refreshing drinks while you play."
-        }
       }
     },
+    rewards: {
+      title: "Over 2,000,000 FCFA up for grabs",
+      subtitle: "The best don't leave empty-handed",
+      description: "Significant rewards await the players who can prevail in the competition.",
+      quote: "The real players stay. The others watch."
+    },
     challenge: {
-      title: "Battle Arena Challenge",
-      subtitle: "Join the Competition",
-      description: "Are you ready to prove your skills? Register now for the VGaming Battle Arena tournament featuring FC26, Billiards, Checkers, and Chess. Compete for a massive 3,000,000 FCFA cash prize!",
-      prize: "Cash Prize",
+      title: "VGaming Challenge",
+      subtitle: "Prove Your Worth",
+      description: "The VGaming Grand Tournament is where champions are made. Compete in EA FC and Billiards for a massive 2,000,000 FCFA prize pool. Only the most skilled and determined will claim victory.",
+      prize: "Total Prize Pool",
       form: {
         fullName: "Full Name",
         pseudo: "Gamertag / Pseudo",
         birthDate: "Date of Birth",
         birthPlace: "Place of Birth",
-        howHeard: "How did you hear about VGaming and this tournament?",
+        howHeard: "How did you hear about this tournament?",
         howHeardOther: "Please specify",
         photo: "Photo (visible face) - Will be used for match announcements",
         uploadPhoto: "Click to upload or drag and drop",
@@ -83,8 +80,8 @@ const translations = {
         hasTeam: "Do you have an Ultimate Team?",
         yes: "Yes",
         no: "No",
-        categories: "Select your categories",
-        categoriesHint: "You can select multiple categories",
+        categories: "Select your competition category",
+        categoriesHint: "Select the discipline(s) you'll compete in",
         submit: "Register Now",
         submitting: "Registering..."
       },
@@ -95,89 +92,91 @@ const translations = {
         other: "Other"
       },
       categoryOptions: {
-        fc26: "FC26",
-        billiard: "Billiard",
-        checkers: "Jeu de Dames",
-        chess: "Echecs"
+        fc26: "EA FC",
+        billiard: "Billiards"
       }
     },
     footer: {
-      tagline: "The Ultimate Gaming Destination",
+      tagline: "Where Champions Compete",
       terms: "Terms & Conditions",
       privacy: "Privacy Policy",
       rights: "All rights reserved.",
       location: "Montée Anor, Bastos, Yaoundé, Cameroon",
       phone: "+237 698 45 36 33 / +237 677 16 71 63",
       email: "contact@vgaming.cm"
+    },
+    practical: {
+      title: "Practical Information",
+      location: "Yaounde",
+      dates: "May 16 & 17, 2026",
+      disciplines: "EA FC / Billiards",
+      registration: "Registration open"
     }
   },
   fr: {
     nav: {
       home: "Accueil",
       about: "À Propos",
-      services: "Services",
+      services: "Disciplines",
       challenge: "Défi",
       contact: "Contact"
     },
     hero: {
-      title: "BATTLE ARENA",
-      subtitle: "L'Expérience Gaming Ultime",
+      title: "Grand Tournoi VGaming",
+      subtitle: "Le jeu atteint un nouveau niveau.",
+      eventInfo: {
+        location: "Yaoundé",
+        date: "16 & 17 Mai 2026",
+        prize: "2 000 000 FCFA en Prix"
+      },
       cta: "Rejoindre le Défi",
       scroll: "Défiler pour explorer"
     },
     about: {
-      title: "À Propos de VGaming",
-      subtitle: "Où le Gaming Rencontre le Divertissement",
-      description: "VGaming est bien plus qu'un simple centre de jeux – c'est un espace communautaire vibrant où la passion des jeux rencontre des expériences inoubliables. Situé au cœur de Bastos, Yaoundé, nous offrons un mélange unique de jeux virtuels, de jeux de table classiques et une cuisine délicieuse dans une atmosphère électrisante.",
-      description2: "Des batailles FIFA intenses aux parties d'échecs stratégiques, des tirs de billard précis aux compétitions amicales de baby-foot, VGaming rassemble les joueurs et les amateurs de divertissement de tous niveaux. Nos expériences VR de pointe vous transportent dans de nouveaux mondes, tandis que nos spécialités grillées vous gardent énergisé pour le prochain tour.",
+      title: "Le Concept",
+      subtitle: "Une Compétition. De la Pression. De la Sélection.",
+      description: "Le Grand Tournoi VGaming rassemble les joueurs les plus déterminés autour de deux disciplines majeures : EA FC et le Billard.",
+      description2: "Ici, ce n'est pas seulement une question de participation.",
+      description3: "C'est une question de performance.",
+      description4: "C'est une question de victoire.",
       stats: {
-        visitors: "Visiteurs Satisfaits",
-        games: "Jeux Disponibles",
-        events: "Événements Organisés",
+        visitors: "Compétiteurs",
+        games: "Disciplines Principales",
+        events: "Éditions du Tournoi",
         years: "Années d'Excellence"
       }
     },
     services: {
-      title: "Nos Services",
-      subtitle: "Découvrez Nos Activités",
+      title: "Disciplines du Tournoi",
+      subtitle: "Maîtrisez Deux Jeux Majeurs",
       items: {
-        vr: {
-          title: "Réalité Virtuelle",
-          description: "Plongez dans des expériences VR de pointe avec notre équipement ultramoderne et notre bibliothèque de jeux passionnants."
-        },
-        videogames: {
-          title: "Jeux Vidéo",
-          description: "Jouez aux derniers FIFA et autres titres populaires sur des consoles nouvelle génération dans nos zones de jeu confortables."
-        },
-        chess: {
-          title: "Échecs & Dames",
-          description: "Défiez votre esprit avec des jeux de stratégie classiques. Parfait pour les débutants et les maîtres."
+        eafc: {
+          title: "EA FC",
+          description: "64 joueurs (amateurs & pros) | Format à élimination directe + Super Finale | Matchs rapides et intenses"
         },
         billiards: {
           title: "Billard",
-          description: "Plusieurs tables de billard de qualité professionnelle pour des parties décontractées ou compétitives."
+          description: "64 joueurs pros & 32 joueurs amateurs | Phase de groupes + élimination | Précision, stratégie et sang-froid"
         },
-        foosball: {
-          title: "Baby-Foot",
-          description: "Action de football de table rapide! Parfait pour des parties rapides entre amis."
-        },
-        food: {
-          title: "Brochettes & Bar",
-          description: "Savourez nos délicieuses spécialités grillées et boissons rafraîchissantes pendant que vous jouez."
-        }
       }
     },
+    rewards: {
+      title: "Plus de 2 000 000 FCFA à gagner",
+      subtitle: "Les meilleurs ne repartent pas les mains vides",
+      description: "Des récompenses significatives attendent les joueurs qui pourront prévaloir dans la compétition.",
+      quote: "Les vrais joueurs restent. Les autres regardent."
+    },
     challenge: {
-      title: "Défi Battle Arena",
-      subtitle: "Rejoignez la Compétition",
-      description: "Êtes-vous prêt à prouver vos compétences? Inscrivez-vous maintenant au tournoi VGaming Battle Arena avec FC26, Billard, Jeu de Dames et Échecs. Concourez pour un prix en espèces massif de 3 000 000 FCFA!",
-      prize: "Prix en Espèces",
+      title: "Défi VGaming",
+      subtitle: "Prouvez Votre Valeur",
+      description: "Le Grand Tournoi VGaming est là où les champions sont créés. Compétez en EA FC et Billard pour un énorme pool de prix de 2 000 000 FCFA. Seuls les plus compétents et les plus déterminés remporteront la victoire.",
+      prize: "Pool Total de Prix",
       form: {
         fullName: "Nom et Prénom",
         pseudo: "Pseudo",
         birthDate: "Date de Naissance",
         birthPlace: "Lieu de Naissance",
-        howHeard: "Comment avez-vous entendu parler de V Gaming et du tournoi?",
+        howHeard: "Comment avez-vous entendu parler de ce tournoi?",
         howHeardOther: "Veuillez préciser",
         photo: "Photo (visage visible) - Sera utilisée pour annoncer les confrontations",
         uploadPhoto: "Cliquez pour télécharger ou glisser-déposer",
@@ -185,11 +184,11 @@ const translations = {
         level: "Niveau du Joueur",
         amateur: "Amateur",
         professional: "Professionnel",
-        hasTeam: "As-tu une équipe Ultimate Team?",
+        hasTeam: "Avez-vous une équipe Ultimate?",
         yes: "Oui",
         no: "Non",
-        categories: "Sélectionnez vos catégories",
-        categoriesHint: "Vous pouvez sélectionner plusieurs catégories",
+        categories: "Sélectionnez votre catégorie de compétition",
+        categoriesHint: "Sélectionnez la(les) discipline(s) dans laquelle vous allez concourir",
         submit: "S'inscrire Maintenant",
         submitting: "Inscription en cours..."
       },
@@ -200,20 +199,25 @@ const translations = {
         other: "Autre"
       },
       categoryOptions: {
-        fc26: "FC26",
-        billiard: "Billard",
-        checkers: "Jeu de Dames",
-        chess: "Échecs"
+        fc26: "EA FC",
+        billiard: "Billard"
       }
     },
     footer: {
-      tagline: "La Destination Gaming Ultime",
+      tagline: "Où les Champions Compétissent",
       terms: "Conditions Générales",
       privacy: "Politique de Confidentialité",
       rights: "Tous droits réservés.",
       location: "Montée Anor, Bastos, Yaoundé, Cameroun",
       phone: "+237 698 45 36 33 / +237 677 16 71 63",
       email: "contact@vgaming.cm"
+    },
+    practical: {
+      title: "Informations Pratiques",
+      location: "Yaoundé",
+      dates: "16 & 17 Mai 2026",
+      disciplines: "EA FC / Billard",
+      registration: "Inscriptions ouvertes"
     }
   }
 }
@@ -448,9 +452,9 @@ export default function VGamingPage() {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 text-center px-3 max-w-5xl mx-auto">
+        <div className="relative z-10 text-center px-3 max-w-3xl mx-auto">
           <div className="animate-fade-in-up">
-            <span className="inline-block px-5 py-2.5 rounded-full bg-secondary/40 backdrop-blur-sm border border-primary/40 text-primary text-sm md:text-base mb-6 font-semibold tracking-wide shadow-lg">
+            <span className="inline-block px-5 py-1 rounded-full bg-secondary/40 backdrop-blur-sm border border-primary/40 text-primary text-sm md:text-base mb-6 font-semibold tracking-wide shadow-lg">
               BATTLE ARENA - COMING SOON
             </span>
           </div>
@@ -469,9 +473,36 @@ export default function VGamingPage() {
             {t.hero.title}
           </h2>
 
-          <p className="text-xl md:text-2xl text-foreground/80 mb-10 animate-fade-in-up animation-delay-400">
+          <p className="text-xl md:text-2xl text-foreground/80 mb-6 animate-fade-in-up animation-delay-400">
             {t.hero.subtitle}
           </p>
+
+          <div className="grid grid-cols-3 gap-6 mb-10 animate-fade-in-up animation-delay-450 max-w-lg mx-auto">
+            <div className="text-center group">
+              <div className="w-16 h-16 mx-auto mb-3 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary/20 group-hover:border-primary/40 group-hover:bg-primary/20 transition-all duration-300 shadow-lg">
+                <MapPin className="w-8 h-8 text-primary" />
+              </div>
+              <p className="text-sm font-semibold text-foreground/90 group-hover:text-primary transition-colors">
+                {t.hero.eventInfo.location}
+              </p>
+            </div>
+            <div className="text-center group">
+              <div className="w-16 h-16 mx-auto mb-3 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary/20 group-hover:border-primary/40 group-hover:bg-primary/20 transition-all duration-300 shadow-lg">
+                <Calendar className="w-8 h-8 text-primary" />
+              </div>
+              <p className="text-sm font-semibold text-foreground/90 group-hover:text-primary transition-colors">
+                {t.hero.eventInfo.date}
+              </p>
+            </div>
+            <div className="text-center group">
+              <div className="w-16 h-16 mx-auto mb-3 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary/20 group-hover:border-primary/40 group-hover:bg-primary/20 transition-all duration-300 shadow-lg">
+                <DollarSign className="w-8 h-8 text-primary" />
+              </div>
+              <p className="text-sm font-semibold text-foreground/90 group-hover:text-primary transition-colors">
+                {t.hero.eventInfo.prize}
+              </p>
+            </div>
+          </div>
 
           <div className="animate-fade-in-up animation-delay-500">
             <a
@@ -494,7 +525,7 @@ export default function VGamingPage() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 md:py-32 bg-gradient-to-b from-background to-card">
+      <section id="about" className="py-20 md:py-30 bg-gradient-to-b from-background to-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Text Content */}
@@ -508,9 +539,11 @@ export default function VGamingPage() {
               <p className="text-foreground/70 text-lg leading-relaxed mb-6">
                 {t.about.description}
               </p>
-              <p className="text-foreground/70 text-lg leading-relaxed mb-8">
-                {t.about.description2}
-              </p>
+              <div className="mb-8 space-y-4">
+                <p className="text-foreground/70 text-lg leading-relaxed">{t.about.description2}</p>
+                <p className="text-foreground/70 text-lg leading-relaxed"><Target className="inline w-5 h-5 text-primary mr-2" /> {t.about.description3}</p>
+                <p className="text-foreground/70 text-lg leading-relaxed"><Trophy className="inline w-5 h-5 text-primary mr-2" /> {t.about.description4}</p>
+              </div>
 
               {/* Stats */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
@@ -557,7 +590,7 @@ export default function VGamingPage() {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-20 md:py-32 bg-card">
+      <section id="services" className="py-20 md:py-30 bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-16 scroll-animate opacity-0 translate-y-10 transition-all duration-700">
@@ -570,29 +603,13 @@ export default function VGamingPage() {
           </div>
 
           {/* Services Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {/* VR Gaming */}
-            <ServiceCard
-              image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-eHfAJMLhkUee5ivK6ECVMD1WxoLrxW.png"
-              title={t.services.items.vr.title}
-              description={t.services.items.vr.description}
-              delay={0}
-            />
-
-            {/* Video Games */}
+          <div className="grid sm:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto">
+            {/* EA FC */}
             <ServiceCard
               image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-O7yIThYm82gs7P07uFr8NW4TU5bNkD.png"
-              title={t.services.items.videogames.title}
-              description={t.services.items.videogames.description}
-              delay={100}
-            />
-
-            {/* Chess */}
-            <ServiceCard
-              image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-7DlvAgqA4voh9T32RrJiOogqaN1OKg.png"
-              title={t.services.items.chess.title}
-              description={t.services.items.chess.description}
-              delay={200}
+              title={t.services.items.eafc.title}
+              description={t.services.items.eafc.description}
+              delay={0}
             />
 
             {/* Billiards */}
@@ -600,30 +617,44 @@ export default function VGamingPage() {
               image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image.png-GTjVApev14wO3nvTAkslTg5XcpuP79.jpeg"
               title={t.services.items.billiards.title}
               description={t.services.items.billiards.description}
-              delay={300}
-            />
-
-            {/* Foosball */}
-            <ServiceCard
-              image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image.png-ZDUcuTth4or1p3YFUgOswlSusEoNsH.jpeg"
-              title={t.services.items.foosball.title}
-              description={t.services.items.foosball.description}
-              delay={400}
-            />
-
-            {/* Food & Bar */}
-            <ServiceCard
-              image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-nzZHsXjdtbHwOQRYF4TX3AisJOVK1f.png"
-              title={t.services.items.food.title}
-              description={t.services.items.food.description}
-              delay={500}
+              delay={100}
             />
           </div>
         </div>
       </section>
+      {/* Rewards Section */}
+      <section id="rewards" className="py-20 md:py-32 bg-gradient-to-b from-background to-card relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a227' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
+        </div>
 
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center scroll-animate opacity-0 translate-y-10 transition-all duration-700">
+            <span className="inline-block px-4 py-2 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
+              {t.rewards.subtitle}
+            </span>
+            <h2 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+              {t.rewards.title}
+            </h2>
+            <p className="text-foreground/70 text-lg leading-relaxed mb-8 max-w-3xl mx-auto">
+              {t.rewards.description}
+            </p>
+
+            {/* Quote Block */}
+            <blockquote className="relative mb-12 max-w-2xl mx-auto">
+              <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border-l-4 border-primary pl-8 pr-8 py-6 rounded-r-lg shadow-lg">
+                <p className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary italic mb-4">{t.rewards.quote}</p>
+                <cite className="text-foreground/60 text-sm font-medium">
+                  — VGaming Tournament
+                </cite>
+              </div>
+            </blockquote>
+          </div>
+        </div>
+      </section>
       {/* Challenge Registration Section */}
-      <section id="challenge" className="py-20 md:py-32 bg-gradient-to-b from-card to-background relative overflow-hidden">
+      <section id="challenge" className="py-20 md:py-25 bg-gradient-to-b from-card to-background relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a227' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
@@ -656,7 +687,7 @@ export default function VGamingPage() {
                   <div className="text-center bg-secondary/80 backdrop-blur-sm rounded-xl py-4 px-6 border border-primary/30">
                     <p className="text-foreground/90 text-sm mb-2">{t.challenge.prize}</p>
                     <p className="font-[family-name:var(--font-orbitron)] text-4xl md:text-5xl font-black text-primary drop-shadow-lg">
-                      3,000,000 <span className="text-xl">FCFA</span>
+                      2,000,000 <span className="text-xl">FCFA</span>
                     </p>
                   </div>
                 </div>
@@ -961,7 +992,7 @@ export default function VGamingPage() {
               <p className="text-foreground/60 mb-6">{t.footer.tagline}</p>
               {/* Social Media */}
               <div className="flex gap-4">
-                <a href="#" className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all">
+                <a href="https://www.facebook.com/profile.php?id=61576271970269&sk=reels_tab" className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all">
                   <Facebook className="w-5 h-5" />
                 </a>
                 <a href="#" className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all">
@@ -976,21 +1007,25 @@ export default function VGamingPage() {
               </div>
             </div>
 
-            {/* Contact Info */}
+            {/* Practical Information */}
             <div>
-              <h4 className="font-[family-name:var(--font-orbitron)] font-bold text-lg mb-4">{t.nav.contact}</h4>
+              <h4 className="font-[family-name:var(--font-orbitron)] font-bold text-lg mb-4">{t.practical.title}</h4>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <p className="text-foreground/70 text-sm">{t.footer.location}</p>
+                  <p className="text-foreground/70 text-sm">{t.practical.location}</p>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Phone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <p className="text-foreground/70 text-sm">{t.footer.phone}</p>
+                  <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <p className="text-foreground/70 text-sm">{t.practical.dates}</p>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Mail className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <p className="text-foreground/70 text-sm">{t.footer.email}</p>
+                  <Gamepad className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <p className="text-foreground/70 text-sm">{t.practical.disciplines}</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <MessageCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <p className="text-foreground/70 text-sm">{t.practical.registration}</p>
                 </div>
               </div>
             </div>
@@ -1104,32 +1139,28 @@ function ServiceCard({
   delay: number
 }) {
   return (
-    <div
+    <figure
       className="scroll-animate opacity-0 translate-y-10 transition-all duration-700 group"
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <div className="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-xl">
+      <div className="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-xl mb-4">
         <Image
           src={image}
           alt={title}
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        {/* Default Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/40 to-transparent" />
-        {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/90 to-secondary/70 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-        {/* Content */}
-        <div className="absolute inset-0 flex flex-col justify-end p-6">
-          <h3 className="font-[family-name:var(--font-orbitron)] text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-            {title}
-          </h3>
-          <p className="text-foreground/80 text-sm leading-relaxed opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 group-hover:text-foreground transition-all duration-300">
-            {description}
-          </p>
-        </div>
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-secondary/20 via-transparent to-transparent" />
       </div>
-    </div>
+      <figcaption className="text-center">
+        <h3 className="font-[family-name:var(--font-orbitron)] text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+          {title}
+        </h3>
+        <p className="text-foreground/80 text-sm leading-relaxed">
+          {description}
+        </p>
+      </figcaption>
+    </figure>
   )
 }

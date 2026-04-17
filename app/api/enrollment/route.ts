@@ -3,8 +3,39 @@ import { NextRequest, NextResponse } from "next/server"
 
 const GHL_WEBHOOK_URL = "https://services.leadconnectorhq.com/hooks/B5v2sbcLstGABgVo9xIG/webhook-trigger/62b3b92c-fd4b-4af4-a536-ade5c787b96c"
 
+const isValidUrl = (value: string) => {
+  try {
+    const url = new URL(value)
+    return url.protocol === "http:" || url.protocol === "https:"
+  } catch {
+    return false
+  }
+}
+
+const isSupabaseConfigValid = () => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ""
+  return (
+    isValidUrl(url) &&
+    key !== "" &&
+    !url.includes("your_supabase") &&
+    !key.includes("your_")
+  )
+}
+
 export async function POST(request: NextRequest) {
   try {
+    if (!isSupabaseConfigValid()) {
+      console.error("[v0] Supabase configuration invalid or missing")
+      return NextResponse.json(
+        {
+          error: "Supabase environment is not configured or invalid",
+          details: "Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY with valid values in .env.local",
+        },
+        { status: 503 }
+      )
+    }
+
     const supabase = await createClient()
     const data = await request.json()
 
@@ -103,9 +134,10 @@ export async function POST(request: NextRequest) {
       ghlStatus: ghlSuccess ? "sent" : "failed",
     })
   } catch (error) {
-    console.error("[v0] Enrollment API error:", error)
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    console.error("[v0] Enrollment API error:", errorMessage)
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", details: errorMessage },
       { status: 500 }
     )
   }

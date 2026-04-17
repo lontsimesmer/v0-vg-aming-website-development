@@ -8,6 +8,48 @@ This repository is linked to a [v0](https://v0.app) project. You can continue de
 
 [Continue working on v0 →](https://v0.app/chat/projects/prj_ovgs0qDVsACXECgGfPgTSdBrrOGp)
 
+## Payment API Setup
+
+This application integrates with MTN Mobile Money and Orange Money for real payment processing.
+
+### Environment Variables
+
+Copy `.env.example` to `.env.local` and fill in your API credentials:
+
+```bash
+cp .env.example .env.local
+```
+
+### MTN Mobile Money Setup
+
+1. Visit [MTN MoMo Developer Portal](https://momodeveloper.mtn.com/)
+2. Create a developer account
+3. Register your application
+4. Get your API Key, API Secret, and Subscription Key
+5. Use sandbox environment for testing
+
+### Orange Money Setup
+
+1. Visit [Orange Developer Portal](https://developer.orange.com/)
+2. Create a developer account
+3. Register your application for Orange Money API
+4. Get your Client ID, Client Secret, and Merchant Key
+5. Use sandbox environment for testing
+
+### Merchant Accounts
+
+The application is configured with these merchant accounts:
+- **MTN**: V GROUPE SARL (Account: 765064)
+- **Orange**: V GROUP SARL (Account: 906608)
+
+### Testing
+
+Once configured, test payments will:
+1. Initiate real payment requests to the mobile money providers
+2. Send SMS prompts to users' phones
+3. Process payments when users enter their PIN codes
+4. Confirm successful payments and redirect to completion page
+
 ## Getting Started
 
 First, run the development server:

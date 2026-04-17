@@ -2,7 +2,33 @@
 
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
-import { Menu, X, Globe, MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, ChevronDown, Upload, Calendar, Gamepad, MessageCircle, DollarSign, Target, Trophy } from "lucide-react"
+import { Menu, X, Globe, MapPin, Phone, Mail, Facebook, Instagram, Youtube, ChevronDown, Upload, Calendar, Gamepad, MessageCircle, DollarSign, Target, Trophy } from "lucide-react"
+
+const isValidUrl = (value: string) => {
+  try {
+    const url = new URL(value)
+    return url.protocol === "http:" || url.protocol === "https:"
+  } catch {
+    return false
+  }
+}
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ""
+const isSupabaseConfigured =
+  isValidUrl(SUPABASE_URL) &&
+  SUPABASE_ANON_KEY !== "" &&
+  !SUPABASE_URL.includes("your_supabase") &&
+  !SUPABASE_ANON_KEY.includes("your_")
+
+// Custom TikTok Icon Component
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+    </svg>
+  )
+}
 
 // Translations
 const translations = {
@@ -32,6 +58,7 @@ const translations = {
       description2: "Here, it's not just about participating.",
       description3: "It's about performing.",
       description4: "It's about winning.",
+      edition: "2nd",
       stats: {
         visitors: "Competitors",
         games: "Main Disciplines",
@@ -139,6 +166,7 @@ const translations = {
       description2: "Ici, ce n'est pas seulement une question de participation.",
       description3: "C'est une question de performance.",
       description4: "C'est une question de victoire.",
+      edition: "2ème",
       stats: {
         visitors: "Compétiteurs",
         games: "Disciplines Principales",
@@ -341,6 +369,16 @@ export default function VGamingPage() {
         language: lang,
       }
 
+      if (!isSupabaseConfigured) {
+        console.warn("[v0] Supabase configuration missing, skipping backend submission and continuing with local redirect.")
+
+        localStorage.setItem("vgaming-enrollment", JSON.stringify(enrollmentData))
+        localStorage.setItem("vgaming-lang", lang)
+
+        window.location.href = "/payment"
+        return
+      }
+
       console.log("[v0] Submitting enrollment to API...")
 
       // Send to API route (handles DB storage + GHL webhook)
@@ -352,17 +390,35 @@ export default function VGamingPage() {
         body: JSON.stringify(enrollmentData),
       })
 
-      const result = await response.json()
+      const responseClone = response.clone()
+      let result: any
+      try {
+        result = await response.json()
+      } catch (e) {
+        const rawText = await responseClone.text().catch(() => "")
+        const message = e instanceof Error ? e.message : String(e)
+        result = { error: `Invalid JSON response: ${message}`, rawText }
+      }
 
       if (!response.ok) {
-        console.error("[v0] API error:", result)
-        throw new Error(result.error || "Failed to submit enrollment")
+        const errorMessage = result.error || result.details || result.rawText || JSON.stringify(result)
+        console.error("[v0] API error:", {
+          status: response.status,
+          statusText: response.statusText,
+          body: result,
+          message: errorMessage,
+        })
+        throw new Error(errorMessage || `HTTP ${response.status}: ${response.statusText}`)
       }
 
       console.log("[v0] Enrollment submitted successfully:", result)
 
-      // Redirect to thank you page
-      window.location.href = "/thank-you"
+      // Store enrollment data for payment page
+      localStorage.setItem("vgaming-enrollment", JSON.stringify(enrollmentData))
+      localStorage.setItem("vgaming-lang", lang)
+
+      // Redirect to payment page
+      window.location.href = "/payment"
     } catch (error) {
       console.error("Submission error:", error)
       alert(lang === "en" ? "An error occurred. Please try again." : "Une erreur s'est produite. Veuillez réessayer.")
@@ -548,19 +604,19 @@ export default function VGamingPage() {
               {/* Stats */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
                 <div className="text-center p-4 rounded-xl bg-primary/10 border border-primary/20 hover:border-primary/40 transition-colors">
-                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">5K+</div>
+                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">100+</div>
                   <div className="text-sm text-foreground/60">{t.about.stats.visitors}</div>
                 </div>
                 <div className="text-center p-4 rounded-xl bg-secondary/20 border border-secondary/30 hover:border-secondary/50 transition-colors">
-                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">50+</div>
+                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">2</div>
                   <div className="text-sm text-foreground/60">{t.about.stats.games}</div>
                 </div>
                 <div className="text-center p-4 rounded-xl bg-primary/10 border border-primary/20 hover:border-primary/40 transition-colors">
-                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">100+</div>
+                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">{t.about.edition}</div>
                   <div className="text-sm text-foreground/60">{t.about.stats.events}</div>
                 </div>
                 <div className="text-center p-4 rounded-xl bg-secondary/20 border border-secondary/30 hover:border-secondary/50 transition-colors">
-                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">3+</div>
+                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">1</div>
                   <div className="text-sm text-foreground/60">{t.about.stats.years}</div>
                 </div>
               </div>
@@ -998,8 +1054,8 @@ export default function VGamingPage() {
                 <a href="#" className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all">
                   <Instagram className="w-5 h-5" />
                 </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all">
-                  <Twitter className="w-5 h-5" />
+                <a href="https://www.tiktok.com/@vgaming_bastos" className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all">
+                  <TikTokIcon className="w-5 h-5" />
                 </a>
                 <a href="#" className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all">
                   <Youtube className="w-5 h-5" />

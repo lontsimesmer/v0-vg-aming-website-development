@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { CheckCircle, MessageCircle, ArrowLeft, Globe, Trophy } from "lucide-react"
+import { CheckCircle, ArrowLeft, Globe } from "lucide-react"
 
 const translations = {
   en: {
@@ -15,7 +15,7 @@ const translations = {
     joinGroup: "Join WhatsApp Group",
     backHome: "Back to Home",
     contact: "For any questions, contact us at:",
-    phone: "+237 698 45 36 33 / +237 677 16 71 63",
+    phone: "+237 6 95 95 21 66",
     congratulations: "Congratulations on joining the tournament!"
   },
   fr: {
@@ -27,7 +27,7 @@ const translations = {
     joinGroup: "Rejoindre le Groupe WhatsApp",
     backHome: "Retour à l'Accueil",
     contact: "Pour toute question, contactez-nous au:",
-    phone: "+237 698 45 36 33 / +237 677 16 71 63",
+    phone: "+237 6 95 95 21 66",
     congratulations: "Félicitations d'avoir rejoint le tournoi!"
   }
 }
@@ -94,8 +94,8 @@ export default function RegistrationCompletedPage() {
       <div className="px-4 pb-8">
         <div className="max-w-2xl mx-auto">
           <div className="bg-card/50 backdrop-blur-sm rounded-2xl border border-border p-6 md:p-8 shadow-xl text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-green-500/20 rounded-full flex items-center justify-center">
-              <MessageCircle className="w-8 h-8 text-green-600" />
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center">
+              <img src="/images/social.png" alt="whatsapp" className="" />
             </div>
 
             <h2 className="text-2xl font-bold mb-4">{t.whatsappTitle}</h2>
@@ -107,7 +107,6 @@ export default function RegistrationCompletedPage() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 px-8 py-4 bg-green-600 text-white font-bold text-lg rounded-xl hover:bg-green-700 transition-all duration-300 shadow-lg shadow-green-600/25 hover:shadow-green-600/40 hover:scale-[1.02]"
             >
-              <MessageCircle className="w-6 h-6" />
               {t.joinGroup}
             </a>
           </div>

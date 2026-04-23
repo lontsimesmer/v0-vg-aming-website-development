@@ -1,43 +1,40 @@
-import { createClient } from "@/lib/supabase/server"
-import { NextRequest, NextResponse } from "next/server"
+import { createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
 
-const GHL_WEBHOOK_URL = "https://services.leadconnectorhq.com/hooks/B5v2sbcLstGABgVo9xIG/webhook-trigger/62b3b92c-fd4b-4af4-a536-ade5c787b96c"
+const GHL_WEBHOOK_URL =
+  "https://services.leadconnectorhq.com/hooks/B5v2sbcLstGABgVo9xIG/webhook-trigger/62b3b92c-fd4b-4af4-a536-ade5c787b96c";
 
 const isValidUrl = (value: string) => {
   try {
-    const url = new URL(value)
-    return url.protocol === "http:" || url.protocol === "https:"
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
   } catch {
-    return false
+    return false;
   }
-}
+};
 
 const isSupabaseConfigValid = () => {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ""
-  return (
-    isValidUrl(url) &&
-    key !== "" &&
-    !url.includes("your_supabase") &&
-    !key.includes("your_")
-  )
-}
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+  return isValidUrl(url) && key !== "";
+};
 
 export async function POST(request: NextRequest) {
   try {
     if (!isSupabaseConfigValid()) {
-      console.error("[v0] Supabase configuration invalid or missing")
+      // console.error("[v0] Supabase configuration invalid or missing");
       return NextResponse.json(
         {
           error: "Supabase environment is not configured or invalid",
-          details: "Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY with valid values in .env.local",
+          details:
+            "Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY with valid values in .env.local",
         },
-        { status: 503 }
-      )
+        { status: 503 },
+      );
     }
 
-    const supabase = await createClient()
-    const data = await request.json()
+    const supabase = await createClient();
+    const data = await request.json();
 
     // Insert enrollment into database
     const { data: enrollment, error: enrollmentError } = await supabase
@@ -57,14 +54,17 @@ export async function POST(request: NextRequest) {
         language: data.language,
       })
       .select()
-      .single()
+      .single();
 
     if (enrollmentError) {
-      console.error("[v0] Enrollment insert error:", enrollmentError)
+      console.error("[v0] Enrollment insert error:", enrollmentError);
       return NextResponse.json(
-        { error: "Failed to save enrollment", details: enrollmentError.message },
-        { status: 500 }
-      )
+        {
+          error: "Failed to save enrollment",
+          details: enrollmentError.message,
+        },
+        { status: 500 },
+      );
     }
 
     // Prepare webhook payload
@@ -83,13 +83,13 @@ export async function POST(request: NextRequest) {
       language: data.language,
       submittedAt: new Date().toISOString(),
       enrollmentId: enrollment.id,
-    }
+    };
 
     // Send to GHL webhook
-    let ghlSuccess = false
-    let ghlResponseStatus = "unknown"
-    let ghlResponseBody = ""
-    let ghlErrorMessage = ""
+    let ghlSuccess = false;
+    let ghlResponseStatus = "unknown";
+    let ghlResponseBody = "";
+    let ghlErrorMessage = "";
 
     try {
       const ghlResponse = await fetch(GHL_WEBHOOK_URL, {
@@ -98,78 +98,124 @@ export async function POST(request: NextRequest) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(webhookPayload),
-      })
+      });
 
-      ghlResponseStatus = ghlResponse.status.toString()
-      ghlSuccess = ghlResponse.ok
-      
+      ghlResponseStatus = ghlResponse.status.toString();
+      ghlSuccess = ghlResponse.ok;
+
       try {
-        ghlResponseBody = await ghlResponse.text()
+        ghlResponseBody = await ghlResponse.text();
       } catch {
-        ghlResponseBody = "Could not read response body"
+        ghlResponseBody = "Could not read response body";
       }
     } catch (webhookError) {
-      ghlErrorMessage = webhookError instanceof Error ? webhookError.message : "Unknown webhook error"
-      console.error("[v0] GHL webhook error:", ghlErrorMessage)
+      ghlErrorMessage =
+        webhookError instanceof Error
+          ? webhookError.message
+          : "Unknown webhook error";
+      console.error("[v0] GHL webhook error:", ghlErrorMessage);
     }
 
     // Log GHL execution
-    const { error: logError } = await supabase.from("ghl_execution_logs").insert({
-      enrollment_id: enrollment.id,
-      webhook_url: GHL_WEBHOOK_URL,
-      request_payload: webhookPayload,
-      response_status: ghlResponseStatus,
-      response_body: ghlResponseBody,
-      success: ghlSuccess,
-      error_message: ghlErrorMessage || null,
-    })
+    const { error: logError } = await supabase
+      .from("ghl_execution_logs")
+      .insert({
+        enrollment_id: enrollment.id,
+        webhook_url: GHL_WEBHOOK_URL,
+        request_payload: webhookPayload,
+        response_status: ghlResponseStatus,
+        response_body: ghlResponseBody,
+        success: ghlSuccess,
+        error_message: ghlErrorMessage || null,
+      });
 
     if (logError) {
-      console.error("[v0] GHL log insert error:", logError)
+      console.error("[v0] GHL log insert error:", logError);
     }
 
     return NextResponse.json({
       success: true,
       enrollmentId: enrollment.id,
       ghlStatus: ghlSuccess ? "sent" : "failed",
-    })
+    });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error)
-    console.error("[v0] Enrollment API error:", errorMessage)
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("[v0] Enrollment API error:", errorMessage);
     return NextResponse.json(
       { error: "Internal server error", details: errorMessage },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }
 
 export async function GET() {
   try {
-    const supabase = await createClient()
-
-    // Get all enrollments with their GHL logs
-    const { data: enrollments, error: enrollmentsError } = await supabase
-      .from("enrollments")
-      .select(`
-        *,
-        ghl_execution_logs (*)
-      `)
-      .order("created_at", { ascending: false })
-
-    if (enrollmentsError) {
-      console.error("[v0] Enrollments fetch error:", enrollmentsError)
+    console.log("[v0] GET /api/enrollment - Starting request");
+    // Validate Supabase configuration
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+    console.log("[v0] Supabase URL present:", !!url);
+    console.log("[v0] Supabase Key present:", !!key);
+    if (!isSupabaseConfigValid()) {
+      console.error("[v0] Supabase configuration invalid");
       return NextResponse.json(
-        { error: "Failed to fetch enrollments" },
-        { status: 500 }
-      )
+        {
+          error: "Supabase not configured",
+          details:
+            "Missing or invalid NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        },
+        { status: 503 },
+      );
     }
 
-    return NextResponse.json({ enrollments })
+    const supabase = await createClient();
+    console.log("[v0] Supabase client created");
+
+    // CORRECTED: Destructure 'data' instead of 'enrollments'
+    const { data: enrollments, error: enrollmentsError } = await supabase
+      .from("enrollments")
+      .select(
+        `
+        *,
+        ghl_execution_logs (*)
+      `,
+      )
+      .order("created_at", { ascending: false });
+
+    if (enrollmentsError) {
+      console.error("[v0] Supabase query error:", {
+        message: enrollmentsError.message,
+        code: enrollmentsError.code,
+        details: enrollmentsError.details,
+      });
+      return NextResponse.json(
+        {
+          error: "Failed to fetch enrollments",
+          details: enrollmentsError.message,
+          code: enrollmentsError.code,
+        },
+        { status: 500 },
+      );
+    }
+
+    if (!enrollments || !Array.isArray(enrollments)) {
+      console.error("[v0] Invalid response format:", typeof enrollments);
+      return NextResponse.json(
+        { error: "Invalid enrollments data" },
+        { status: 500 },
+      );
+    }
+
+    console.log("[v0] Successfully fetched enrollments:", enrollments.length);
+    return NextResponse.json({ enrollments });
   } catch (error) {
-    console.error("[v0] Enrollment GET error:", error)
+    console.error("[v0] GET enrollments endpoint error:", {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }

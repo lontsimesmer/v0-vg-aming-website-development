@@ -41,7 +41,8 @@ const translations = {
     step3: "Prenez une capture d'écran du virement réussi",
     step4: "Envoyez la capture d'écran à +237 6 95 95 21 66 via WhatsApp",
     joinWhatsapp: "Envoyer via WhatsApp",
-    whatsappMessage: "Cliquez pour envoyer votre preuve de paiement via WhatsApp",
+    whatsappMessage:
+      "Cliquez pour envoyer votre preuve de paiement via WhatsApp",
     screenshotSent: "Capture d'écran envoyée! Prêt à continuer.",
     awaitingScreenshot: "Envoyez d'abord la capture",
   },
@@ -132,7 +133,7 @@ export default function PaymentPage() {
     const message = encodeURIComponent(
       lang === "en"
         ? "Hello, I have completed my payment for VGaming registration. Please find my proof attached."
-        : "Bonjour, j'ai complété mon paiement pour l'inscription VGaming. Veuillez trouver ma preuve ci-jointe."
+        : "Bonjour, j'ai complété mon paiement pour l'inscription VGaming. Veuillez trouver ma preuve ci-jointe.",
     );
     const whatsappUrl = `https://wa.me/237695952166?text=${message}`;
     window.open(whatsappUrl, "_blank");
@@ -148,7 +149,7 @@ export default function PaymentPage() {
       alert(
         lang === "en"
           ? "Please send your screenshot via WhatsApp first"
-          : "Veuillez d'abord envoyer votre capture d'écran via WhatsApp"
+          : "Veuillez d'abord envoyer votre capture d'écran via WhatsApp",
       );
       return;
     }
@@ -165,7 +166,7 @@ export default function PaymentPage() {
       if (!isMTNConfigured && !isOrangeConfigured) {
         // Simulate payment for testing when APIs are not configured
         console.warn(
-          `[${paymentMethod.toUpperCase()}] Payment API not configured, simulating payment for testing`
+          `[${paymentMethod.toUpperCase()}] Payment API not configured, simulating payment for testing`,
         );
         await new Promise((resolve) => setTimeout(resolve, 3000));
         // Store payment data
@@ -214,9 +215,9 @@ export default function PaymentPage() {
         // Show success message
         alert(
           result.message ||
-          (lang === "en"
-            ? "Payment initiated successfully!"
-            : "Paiement initié avec succès!")
+            (lang === "en"
+              ? "Payment initiated successfully!"
+              : "Paiement initié avec succès!"),
         );
         // Redirect to registration completed page
         router.push("/registration-completed");
@@ -228,7 +229,7 @@ export default function PaymentPage() {
       alert(
         lang === "en"
           ? `Payment failed: ${error instanceof Error ? error.message : "Unknown error"}`
-          : `Paiement échoué: ${error instanceof Error ? error.message : "Erreur inconnue"}`
+          : `Paiement échoué: ${error instanceof Error ? error.message : "Erreur inconnue"}`,
       );
     } finally {
       setIsProcessing(false);
@@ -307,10 +308,11 @@ export default function PaymentPage() {
                     setPaymentMethod("mtn");
                     setSelectedImagePopup("mtn");
                   }}
-                  className={`flex flex-col items-center p-3 rounded-xl border cursor-pointer transition-all ${paymentMethod === "mtn"
-                    ? "bg-yellow-500/20 border-yellow-500 ring-2 ring-yellow-500/30"
-                    : "bg-input border-border hover:border-primary/50"
-                    }`}
+                  className={`flex flex-col items-center p-3 rounded-xl border cursor-pointer transition-all ${
+                    paymentMethod === "mtn"
+                      ? "bg-yellow-500/20 border-yellow-500 ring-2 ring-yellow-500/30"
+                      : "bg-input border-border hover:border-primary/50"
+                  }`}
                 >
                   <div className="relative w-24 h-24">
                     <Image
@@ -328,10 +330,11 @@ export default function PaymentPage() {
                     setPaymentMethod("orange");
                     setSelectedImagePopup("orange");
                   }}
-                  className={`flex flex-col items-center p-3 rounded-xl border cursor-pointer transition-all ${paymentMethod === "orange"
-                    ? "bg-orange-500/20 border-orange-500 ring-2 ring-orange-500/30"
-                    : "bg-input border-border hover:border-primary/50"
-                    }`}
+                  className={`flex flex-col items-center p-3 rounded-xl border cursor-pointer transition-all ${
+                    paymentMethod === "orange"
+                      ? "bg-orange-500/20 border-orange-500 ring-2 ring-orange-500/30"
+                      : "bg-input border-border hover:border-primary/50"
+                  }`}
                 >
                   <div className="relative w-24 h-24">
                     <Image
@@ -349,8 +352,8 @@ export default function PaymentPage() {
               <ImagePopup
                 imageSrc={
                   selectedImagePopup === "mtn"
-                    ? "/images/mtn-pay.jpeg"
-                    : "/images/orange-pay.jpeg"
+                    ? "/images/mtn-pay.png"
+                    : "/images/orange-pay.png"
                 }
                 altText={
                   selectedImagePopup === "mtn"
@@ -397,10 +400,11 @@ export default function PaymentPage() {
                     <button
                       type="button"
                       onClick={handleWhatsAppClick}
-                      className={`inline-flex items-center gap-2 px-3 py-1.5 text-white text-xs font-semibold rounded-lg transition-all ${screenshotSent
-                        ? "bg-green-600 hover:bg-green-700"
-                        : "bg-green-600 hover:bg-green-700"
-                        }`}
+                      className={`inline-flex items-center gap-2 px-3 py-1.5 text-white text-xs font-semibold rounded-lg transition-all ${
+                        screenshotSent
+                          ? "bg-green-600 hover:bg-green-700"
+                          : "bg-green-600 hover:bg-green-700"
+                      }`}
                     >
                       <img src="/images/whatsapp.png" alt="WhatsApp" />
                       {screenshotSent ? t.joinWhatsapp : t.awaitingScreenshot}
@@ -421,10 +425,11 @@ export default function PaymentPage() {
               <button
                 type="submit"
                 disabled={isProcessing || !screenshotSent}
-                className={`w-full py-4 font-bold cursor-pointer text-lg rounded-xl transition-all duration-300 shadow-lg flex items-center justify-center gap-2 ${screenshotSent
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-primary/40 hover:scale-[1.02]"
-                  : "bg-gray-400 text-gray-600 cursor-not-allowed opacity-60"
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`w-full py-4 font-bold cursor-pointer text-lg rounded-xl transition-all duration-300 shadow-lg flex items-center justify-center gap-2 ${
+                  screenshotSent
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-primary/40 hover:scale-[1.02]"
+                    : "bg-gray-400 text-gray-600 cursor-not-allowed opacity-60"
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 {isProcessing ? (
                   <>
@@ -432,9 +437,7 @@ export default function PaymentPage() {
                     {t.processing}
                   </>
                 ) : screenshotSent ? (
-                  <>
-                    {t.proceed}
-                  </>
+                  <>{t.proceed}</>
                 ) : (
                   <>
                     <AlertCircle className="w-5 h-5" />

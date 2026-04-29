@@ -148,16 +148,101 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function DELETE(request: NextRequest) {
   try {
-    console.log("[v0] GET /api/enrollment - Starting request");
-    // Validate Supabase configuration
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
-    console.log("[v0] Supabase URL present:", !!url);
-    console.log("[v0] Supabase Key present:", !!key);
     if (!isSupabaseConfigValid()) {
-      console.error("[v0] Supabase configuration invalid");
+      return NextResponse.json(
+        {
+          error: "Supabase environment is not configured or invalid",
+        },
+        { status: 503 },
+      );
+    }
+
+    const supabase = await createClient();
+    const { searchParams } = new URL(request.url);
+    const ids = searchParams.getAll("id");
+
+    if (ids.length === 0) {
+      return NextResponse.json(
+        { error: "Missing enrollment id(s) to delete" },
+        { status: 400 },
+      );
+    }
+
+    const { error } = await supabase.from("enrollments").delete().in("id", ids);
+
+    if (error) {
+      console.error("[v0] Enrollment delete error:", error);
+      return NextResponse.json(
+        { error: "Failed to delete enrollment", details: error.message },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json({ success: true, deletedIds: ids });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("[v0] Enrollment DELETE error:", errorMessage);
+    return NextResponse.json(
+      { error: "Internal server error", details: errorMessage },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    if (!isSupabaseConfigValid()) {
+      return NextResponse.json(
+        {
+          error: "Supabase environment is not configured or invalid",
+        },
+        { status: 503 },
+      );
+    }
+
+    const supabase = await createClient();
+    const data = await request.json();
+    const { id, ...updateFields } = data;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Missing enrollment id to update" },
+        { status: 400 },
+      );
+    }
+
+    const { data: updatedEnrollment, error } = await supabase
+      .from("enrollments")
+      .update(updateFields)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("[v0] Enrollment update error:", error);
+      return NextResponse.json(
+        { error: "Failed to update enrollment", details: error.message },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json({ success: true, enrollment: updatedEnrollment });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("[v0] Enrollment PATCH error:", errorMessage);
+    return NextResponse.json(
+      { error: "Internal server error", details: errorMessage },
+      { status: 500 },
+    );
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    if (!isSupabaseConfigValid()) {
+      console.error("[v0] Supabase config invalid");
       return NextResponse.json(
         {
           error: "Supabase not configured",
@@ -169,25 +254,47 @@ export async function GET() {
     }
 
     const supabase = await createClient();
-    console.log("[v0] Supabase client created");
-
-    // CORRECTED: Destructure 'data' instead of 'enrollments'
-    const { data: enrollments, error: enrollmentsError } = await supabase
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = Math.min(
+      parseInt(searchParams.get("limit") || "50", 10),
+      100,
+    );
+    const offset = (page - 1) * limit;
+    console.log(
+      `[v0] Fetching enrollments: page=${page}, limit=${limit}, offset=${offset}`,
+    );
+    // First, fetch enrollments with pagination
+    const {
+      data: enrollmentsData,
+      error: enrollmentsError,
+      count,
+    } = await supabase
       .from("enrollments")
       .select(
         `
-        *,
-        ghl_execution_logs (*)
+        id,
+        full_name,
+        pseudo,
+        birth_date,
+        birth_place,
+        how_heard,
+        how_heard_source,
+        photo_url,
+        phone,
+        level,
+        has_team,
+        categories,
+        language,
+        created_at
       `,
+        { count: "exact" },
       )
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limit - 1);
 
     if (enrollmentsError) {
-      console.error("[v0] Supabase query error:", {
-        message: enrollmentsError.message,
-        code: enrollmentsError.code,
-        details: enrollmentsError.details,
-      });
+      console.error("[v0] Supabase query error:", enrollmentsError);
       return NextResponse.json(
         {
           error: "Failed to fetch enrollments",
@@ -198,23 +305,83 @@ export async function GET() {
       );
     }
 
-    if (!enrollments || !Array.isArray(enrollments)) {
-      console.error("[v0] Invalid response format:", typeof enrollments);
+    if (!enrollmentsData || !Array.isArray(enrollmentsData)) {
+      console.error("[v0] Invalid enrollments response:", enrollmentsData);
       return NextResponse.json(
         { error: "Invalid enrollments data" },
         { status: 500 },
       );
     }
 
-    console.log("[v0] Successfully fetched enrollments:", enrollments.length);
-    return NextResponse.json({ enrollments });
-  } catch (error) {
-    console.error("[v0] GET enrollments endpoint error:", {
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
+    // Get enrollment IDs for the current page
+    const enrollmentIds = enrollmentsData.map((e) => e.id);
+
+    // Fetch the GHL logs for enrollments in the current page only
+    let logsData: any[] | null = [];
+    let logsError: any = null;
+
+    if (enrollmentIds.length > 0) {
+      const logsResult = await supabase
+        .from("ghl_execution_logs")
+        .select(
+          `
+          id,
+          enrollment_id,
+          webhook_url,
+          request_payload,
+          response_status,
+          response_body,
+          success,
+          error_message,
+          executed_at
+        `,
+        )
+        .in("enrollment_id", enrollmentIds)
+        .order("executed_at", { ascending: false });
+
+      logsData = logsResult.data || [];
+      logsError = logsResult.error;
+    }
+
+    if (logsError) {
+      console.error("[v0] GHL logs query error:", logsError);
+      // Don't fail the request if logs fail, just return empty logs
+    }
+
+    // Group logs by enrollment_id
+    const logsByEnrollment: Record<string, any[]> = {};
+    if (logsData) {
+      for (const log of logsData) {
+        if (!logsByEnrollment[log.enrollment_id]) {
+          logsByEnrollment[log.enrollment_id] = [];
+        }
+        logsByEnrollment[log.enrollment_id].push(log);
+      }
+    }
+
+    // Combine enrollments with their logs
+    const enrollments = enrollmentsData.map((enrollment) => ({
+      ...enrollment,
+      ghl_execution_logs: logsByEnrollment[enrollment.id] || [],
+    }));
+    console.log(`[v0] Successfully fetched ${enrollments.length} enrollments`);
+    return NextResponse.json({
+      enrollments,
+      pagination: {
+        page,
+        limit,
+        total: count,
+        totalPages: Math.ceil((count || 0) / limit),
+      },
     });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("[v0] Enrollment API GET error:", errorMessage, error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        error: "Internal server error",
+        details: errorMessage,
+      },
       { status: 500 },
     );
   }

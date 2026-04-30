@@ -59,12 +59,19 @@ interface EnrollmentStats {
   totalEnrollments: number;
   successfulSyncs: number;
   failedSyncs: number;
+  pendingSyncs: number;
 }
 
-type StatusFilter = "all" | "successful" | "failed" | "pending";
+type StatusFilter = "all" | "synced" | "failed" | "pending";
 
 export default function AdminPage() {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [stats, setStats] = useState<EnrollmentStats>({
+    totalEnrollments: 0,
+    successfulSyncs: 0,
+    failedSyncs: 0,
+    pendingSyncs: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedEnrollment, setExpandedEnrollment] = useState<string | null>(
@@ -89,26 +96,13 @@ export default function AdminPage() {
     if (!latestLog) {
       return "pending" as const;
     }
-    return latestLog.success ? "successful" : "failed";
+    return latestLog.success ? "synced" : "failed";
   };
 
   const filteredEnrollments = enrollments.filter((enrollment) => {
     const status = getEnrollmentStatus(enrollment);
     return statusFilter === "all" || status === statusFilter;
   });
-
-  const pageStats = {
-    totalEnrollments: pagination.total,
-    successfulSyncs: enrollments.filter(
-      (enrollment) => getEnrollmentStatus(enrollment) === "successful",
-    ).length,
-    failedSyncs: enrollments.filter(
-      (enrollment) => getEnrollmentStatus(enrollment) === "failed",
-    ).length,
-    pendingEnrollments: enrollments.filter(
-      (enrollment) => getEnrollmentStatus(enrollment) === "pending",
-    ).length,
-  };
 
   const isAllSelected =
     filteredEnrollments.length > 0 &&
@@ -159,7 +153,22 @@ export default function AdminPage() {
         );
       }
       setEnrollments(data.enrollments);
+      if (data.enrollments.length > 0) {
+        console.log("[admin] Sample enrollment:", {
+          id: data.enrollments[0].id,
+          name: data.enrollments[0].full_name,
+          logsCount: data.enrollments[0].ghl_execution_logs?.length || 0,
+          logs: data.enrollments[0].ghl_execution_logs,
+        });
+      }
       setPagination(data.pagination || { total: 0, totalPages: 0, limit: 50 });
+      setStats({
+        totalEnrollments:
+          data.stats?.totalEnrollments ?? data.pagination?.total ?? 0,
+        successfulSyncs: data.stats?.successfulSyncs ?? 0,
+        failedSyncs: data.stats?.failedSyncs ?? 0,
+        pendingSyncs: data.stats?.pendingSyncs ?? 0,
+      });
       setPage(pageNum);
       setSelectedIds([]);
       setEditingEnrollment(null);
@@ -175,6 +184,21 @@ export default function AdminPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const adjustTotals = (deletedCount: number) => {
+    setPagination((current) => {
+      const newTotal = Math.max(current.total - deletedCount, 0);
+      return {
+        ...current,
+        total: newTotal,
+        totalPages: Math.max(Math.ceil(newTotal / current.limit), 1),
+      };
+    });
+    setStats((current) => ({
+      ...current,
+      totalEnrollments: Math.max(current.totalEnrollments - deletedCount, 0),
+    }));
   };
 
   const handleDeleteSelected = async () => {
@@ -199,8 +223,10 @@ export default function AdminPage() {
       setEnrollments((current) =>
         current.filter((enrollment) => !selectedIds.includes(enrollment.id)),
       );
+      adjustTotals(selectedIds.length);
       setSelectedIds([]);
       setEditingEnrollment(null);
+      setError(null);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Could not delete selected rows",
@@ -296,6 +322,7 @@ export default function AdminPage() {
       if (editingEnrollment?.id === id) {
         setEditingEnrollment(null);
       }
+      adjustTotals(1);
       setError(null);
     } catch (err) {
       setError(
@@ -390,7 +417,7 @@ export default function AdminPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-card rounded-xl p-6 border border-border">
             <div className="text-3xl font-bold text-primary">
-              {pageStats.totalEnrollments}
+              {stats.totalEnrollments}
             </div>
             <div className="text-sm text-muted-foreground">
               Total Enrollments
@@ -398,7 +425,7 @@ export default function AdminPage() {
           </div>
           <div className="bg-card rounded-xl p-6 border border-border">
             <div className="text-3xl font-bold text-green-500">
-              {pageStats.successfulSyncs}
+              {stats.successfulSyncs}
             </div>
             <div className="text-sm text-muted-foreground">
               Successful GHL Syncs
@@ -406,7 +433,7 @@ export default function AdminPage() {
           </div>
           <div className="bg-card rounded-xl p-6 border border-border">
             <div className="text-3xl font-bold text-red-500">
-              {pageStats.failedSyncs}
+              {stats.failedSyncs}
             </div>
             <div className="text-sm text-muted-foreground">
               Failed GHL Syncs
@@ -414,7 +441,7 @@ export default function AdminPage() {
           </div>
           <div className="bg-card rounded-xl p-6 border border-border">
             <div className="text-3xl font-bold text-amber-500">
-              {pageStats.pendingEnrollments}
+              {stats.pendingSyncs}
             </div>
             <div className="text-sm text-muted-foreground">
               Pending Enrollments
@@ -424,13 +451,13 @@ export default function AdminPage() {
 
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
           <div className="flex flex-wrap gap-2">
-            {(["all", "successful", "failed", "pending"] as StatusFilter[]).map(
+            {(["all", "synced", "failed", "pending"] as StatusFilter[]).map(
               (filter) => {
                 const label =
                   filter === "all"
                     ? "All"
-                    : filter === "successful"
-                      ? "Successful"
+                    : filter === "synced"
+                      ? "Synced"
                       : filter === "failed"
                         ? "Failed"
                         : "Pending";
@@ -655,6 +682,7 @@ export default function AdminPage() {
                       <Checkbox
                         checked={isAllSelected}
                         onCheckedChange={toggleSelectAll}
+                        className="border-1 border-primary"
                       />
                     </TableHead>
                     <TableHead>Full Name</TableHead>
@@ -673,16 +701,19 @@ export default function AdminPage() {
                   {filteredEnrollments.map((enrollment) => {
                     const latestLog = enrollment.ghl_execution_logs[0];
                     const isExpanded = expandedEnrollment === enrollment.id;
-                    const statusText = latestLog
-                      ? latestLog.success
+                    const status = getEnrollmentStatus(enrollment);
+                    const statusText =
+                      status === "synced"
                         ? "Synced"
-                        : "Failed"
-                      : "Pending";
-                    const statusClass = latestLog
-                      ? latestLog.success
+                        : status === "failed"
+                          ? "Failed"
+                          : "Pending";
+                    const statusClass =
+                      status === "synced"
                         ? "text-green-500"
-                        : "text-red-500"
-                      : "text-muted-foreground";
+                        : status === "failed"
+                          ? "text-red-500"
+                          : "text-muted-foreground";
                     const isSelected = selectedIds.includes(enrollment.id);
 
                     return (
@@ -704,6 +735,7 @@ export default function AdminPage() {
                                 toggleSelectRow(enrollment.id)
                               }
                               onClick={(event) => event.stopPropagation()}
+                              className="border-1 border-primary"
                             />
                           </TableCell>
                           <TableCell className="font-medium">

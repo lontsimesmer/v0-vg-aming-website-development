@@ -112,6 +112,12 @@ export default function PaymentPage() {
     if (savedLang) {
       setLang(savedLang);
     }
+    // Preload payment images
+    const preloadImages = ["/images/mtn-pay.png", "/images/orange-pay.png"];
+    preloadImages.forEach((src) => {
+      const img = new window.Image();
+      img.src = src;
+    });
   }, [router]);
   // Calculate registration fee
   const calculateFee = () => {

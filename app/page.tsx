@@ -1,33 +1,51 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import Image from "next/image"
-import { Menu, X, Globe, MapPin, Phone, Mail, Facebook, Instagram, Youtube, ChevronDown, Upload, Calendar, Gamepad, MessageCircle, DollarSign, Target, Trophy } from "lucide-react"
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import {
+  Menu,
+  X,
+  Globe,
+  MapPin,
+  Phone,
+  Mail,
+  Facebook,
+  Instagram,
+  Youtube,
+  ChevronDown,
+  Upload,
+  Calendar,
+  Gamepad,
+  MessageCircle,
+  DollarSign,
+  Target,
+  Trophy,
+} from "lucide-react";
 
 const isValidUrl = (value: string) => {
   try {
-    const url = new URL(value)
-    return url.protocol === "http:" || url.protocol === "https:"
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
   } catch {
-    return false
+    return false;
   }
-}
+};
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ""
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 const isSupabaseConfigured =
   isValidUrl(SUPABASE_URL) &&
   SUPABASE_ANON_KEY !== "" &&
   !SUPABASE_URL.includes("your_supabase") &&
-  !SUPABASE_ANON_KEY.includes("your_")
+  !SUPABASE_ANON_KEY.includes("your_");
 
 // Custom TikTok Icon Component
 function TikTokIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
     </svg>
-  )
+  );
 }
 
 // Translations
@@ -38,7 +56,7 @@ const translations = {
       about: "About",
       services: "Disciplines",
       challenge: "Challenge",
-      contact: "Contact"
+      contact: "Contact",
     },
     hero: {
       title: "VGaming Grand Tournament",
@@ -46,15 +64,16 @@ const translations = {
       eventInfo: {
         location: "Yaoundé",
         date: "May 16 & 17, 2026",
-        prize: "2,000,000 FCFA in Prizes"
+        prize: "2,000,000 FCFA in Prizes",
       },
       cta: "Join The Challenge",
-      scroll: "Scroll to explore"
+      scroll: "Scroll to explore",
     },
     about: {
       title: "The Concept",
       subtitle: "A Competition. Pressure. Selection.",
-      description: "The VGaming Grand Tournament brings together the most determined players around two major disciplines: EA FC and Billiards.",
+      description:
+        "The VGaming Grand Tournament brings together the most determined players around two major disciplines: EA FC and Billiards.",
       description2: "Here, it's not just about participating.",
       description3: "It's about performing.",
       description4: "It's about winning.",
@@ -63,8 +82,8 @@ const translations = {
         visitors: "Competitors",
         games: "Main Disciplines",
         events: "Tournament Editions",
-        years: "Years of Excellence"
-      }
+        years: "Years of Excellence",
+      },
     },
     services: {
       title: "Tournament Disciplines",
@@ -72,24 +91,28 @@ const translations = {
       items: {
         eafc: {
           title: "EA FC",
-          description: "64 players (amateurs & pros) | Single-elimination format + Super Final | Fast-paced and intense matches"
+          description:
+            "64 players (amateurs & pros) | Single-elimination format + Super Final | Fast-paced and intense matches",
         },
         billiards: {
           title: "Billiards",
-          description: "64 pro players & 32 amateur players | Group stage + elimination | Precision, strategy, and composure"
+          description:
+            "64 pro players & 32 amateur players | Group stage + elimination | Precision, strategy, and composure",
         },
-      }
+      },
     },
     rewards: {
       title: "Over 2,000,000 FCFA up for grabs",
       subtitle: "The best don't leave empty-handed",
-      description: "Significant rewards await the players who can prevail in the competition.",
-      quote: "The real players stay. The others watch."
+      description:
+        "Significant rewards await the players who can prevail in the competition.",
+      quote: "The real players stay. The others watch.",
     },
     challenge: {
       title: "VGaming Challenge",
       subtitle: "Prove Your Worth",
-      description: "The VGaming Grand Tournament is where champions are made. Compete in EA FC and Billiards for a massive 2,000,000 FCFA prize pool. Only the most skilled and determined will claim victory.",
+      description:
+        "The VGaming Grand Tournament is where champions are made. Compete in EA FC and Billiards for a massive 2,000,000 FCFA prize pool. Only the most skilled and determined will claim victory.",
       prize: "Total Prize Pool",
       form: {
         fullName: "Full Name",
@@ -110,18 +133,18 @@ const translations = {
         categories: "Select your competition category",
         categoriesHint: "Select the discipline(s) you'll compete in",
         submit: "Register Now",
-        submitting: "Registering..."
+        submitting: "Registering...",
       },
       howHeardOptions: {
         social: "Social Media",
         friend: "Friend / Word of Mouth",
         event: "Previous Event",
-        other: "Other"
+        other: "Other",
       },
       categoryOptions: {
-        fc26: "EA FC",
-        billiard: "Billiards"
-      }
+        fc26: "FC26",
+        billiard: "Billiards",
+      },
     },
     footer: {
       tagline: "Where Champions Compete",
@@ -130,15 +153,15 @@ const translations = {
       rights: "All rights reserved.",
       location: "Montée Anor, Bastos, Yaoundé, Cameroon",
       phone: "+237 698 45 36 33 / +237 677 16 71 63",
-      email: "contact@vgaming.cm"
+      email: "contact@vgaming.cm",
     },
     practical: {
       title: "Practical Information",
       location: "Yaounde",
       dates: "May 16 & 17, 2026",
       disciplines: "EA FC / Billiards",
-      registration: "Registration open"
-    }
+      registration: "Registration open",
+    },
   },
   fr: {
     nav: {
@@ -146,7 +169,7 @@ const translations = {
       about: "À Propos",
       services: "Disciplines",
       challenge: "Défi",
-      contact: "Contact"
+      contact: "Contact",
     },
     hero: {
       title: "Grand Tournoi VGaming",
@@ -154,16 +177,18 @@ const translations = {
       eventInfo: {
         location: "Yaoundé",
         date: "16 & 17 Mai 2026",
-        prize: "2 000 000 FCFA en Prix"
+        prize: "2 000 000 FCFA en Prix",
       },
       cta: "Rejoindre le Défi",
-      scroll: "Défiler pour explorer"
+      scroll: "Défiler pour explorer",
     },
     about: {
       title: "Le Concept",
       subtitle: "Une Compétition. De la Pression. De la Sélection.",
-      description: "Le Grand Tournoi VGaming rassemble les joueurs les plus déterminés autour de deux disciplines majeures : EA FC et le Billard.",
-      description2: "Ici, ce n'est pas seulement une question de participation.",
+      description:
+        "Le Grand Tournoi VGaming rassemble les joueurs les plus déterminés autour de deux disciplines majeures : EA FC et le Billard.",
+      description2:
+        "Ici, ce n'est pas seulement une question de participation.",
       description3: "C'est une question de performance.",
       description4: "C'est une question de victoire.",
       edition: "2ème",
@@ -171,8 +196,8 @@ const translations = {
         visitors: "Compétiteurs",
         games: "Disciplines Principales",
         events: "Éditions du Tournoi",
-        years: "Années d'Excellence"
-      }
+        years: "Années d'Excellence",
+      },
     },
     services: {
       title: "Disciplines du Tournoi",
@@ -180,24 +205,28 @@ const translations = {
       items: {
         eafc: {
           title: "EA FC",
-          description: "64 joueurs (amateurs & pros) | Format à élimination directe + Super Finale | Matchs rapides et intenses"
+          description:
+            "64 joueurs (amateurs & pros) | Format à élimination directe + Super Finale | Matchs rapides et intenses",
         },
         billiards: {
           title: "Billard",
-          description: "64 joueurs pros & 32 joueurs amateurs | Phase de groupes + élimination | Précision, stratégie et sang-froid"
+          description:
+            "64 joueurs pros & 32 joueurs amateurs | Phase de groupes + élimination | Précision, stratégie et sang-froid",
         },
-      }
+      },
     },
     rewards: {
       title: "Plus de 2 000 000 FCFA à gagner",
       subtitle: "Les meilleurs ne repartent pas les mains vides",
-      description: "Des récompenses significatives attendent les joueurs qui pourront prévaloir dans la compétition.",
-      quote: "Les vrais joueurs restent. Les autres regardent."
+      description:
+        "Des récompenses significatives attendent les joueurs qui pourront prévaloir dans la compétition.",
+      quote: "Les vrais joueurs restent. Les autres regardent.",
     },
     challenge: {
       title: "Défi VGaming",
       subtitle: "Prouvez Votre Valeur",
-      description: "Le Grand Tournoi VGaming est là où les champions sont créés. Compétez en EA FC et Billard pour un énorme pool de prix de 2 000 000 FCFA. Seuls les plus compétents et les plus déterminés remporteront la victoire.",
+      description:
+        "Le Grand Tournoi VGaming est là où les champions sont créés. Compétez en EA FC et Billard pour un énorme pool de prix de 2 000 000 FCFA. Seuls les plus compétents et les plus déterminés remporteront la victoire.",
       prize: "Pool Total de Prix",
       form: {
         fullName: "Nom et Prénom",
@@ -206,7 +235,8 @@ const translations = {
         birthPlace: "Lieu de Naissance",
         howHeard: "Comment avez-vous entendu parler de ce tournoi?",
         howHeardOther: "Veuillez préciser",
-        photo: "Photo (visage visible) - Sera utilisée pour annoncer les confrontations",
+        photo:
+          "Photo (visage visible) - Sera utilisée pour annoncer les confrontations",
         uploadPhoto: "Cliquez pour télécharger ou glisser-déposer",
         phone: "Numéro de Téléphone",
         level: "Niveau du Joueur",
@@ -216,20 +246,21 @@ const translations = {
         yes: "Oui",
         no: "Non",
         categories: "Sélectionnez votre catégorie de compétition",
-        categoriesHint: "Sélectionnez la(les) discipline(s) dans laquelle vous allez concourir",
+        categoriesHint:
+          "Sélectionnez la(les) discipline(s) dans laquelle vous allez concourir",
         submit: "S'inscrire Maintenant",
-        submitting: "Inscription en cours..."
+        submitting: "Inscription en cours...",
       },
       howHeardOptions: {
         social: "Réseaux Sociaux",
         friend: "Ami / Bouche à oreille",
         event: "Événement précédent",
-        other: "Autre"
+        other: "Autre",
       },
       categoryOptions: {
-        fc26: "EA FC",
-        billiard: "Billard"
-      }
+        fc26: "FC26",
+        billiard: "Billard",
+      },
     },
     footer: {
       tagline: "Où les Champions Compétissent",
@@ -238,23 +269,23 @@ const translations = {
       rights: "Tous droits réservés.",
       location: "Montée Anor, Bastos, Yaoundé, Cameroun",
       phone: "+237 698 45 36 33 / +237 677 16 71 63",
-      email: "contact@vgaming.cm"
+      email: "contact@vgaming.cm",
     },
     practical: {
       title: "Informations Pratiques",
       location: "Yaoundé",
       dates: "16 & 17 Mai 2026",
       disciplines: "EA FC / Billard",
-      registration: "Inscriptions ouvertes"
-    }
-  }
-}
+      registration: "Inscriptions ouvertes",
+    },
+  },
+};
 
 export default function VGamingPage() {
-  const [lang, setLang] = useState<"en" | "fr">("fr")
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  const [heroOverlayOpacity, setHeroOverlayOpacity] = useState(0.7)
+  const [lang, setLang] = useState<"en" | "fr">("fr");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [heroOverlayOpacity, setHeroOverlayOpacity] = useState(0.7);
   const [formData, setFormData] = useState({
     fullName: "",
     pseudo: "",
@@ -266,36 +297,36 @@ export default function VGamingPage() {
     phone: "",
     level: "",
     hasTeam: "",
-    categories: [] as string[]
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+    categories: [] as string[],
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const t = translations[lang]
+  const t = translations[lang];
 
   // Hero overlay animation
   useEffect(() => {
     const animateOverlay = () => {
-      setHeroOverlayOpacity(0.3)
+      setHeroOverlayOpacity(0.3);
       setTimeout(() => {
-        setHeroOverlayOpacity(0.7)
-      }, 3000)
-    }
+        setHeroOverlayOpacity(0.7);
+      }, 3000);
+    };
 
-    animateOverlay()
-    const interval = setInterval(animateOverlay, 8000)
-    return () => clearInterval(interval)
-  }, [])
+    animateOverlay();
+    const interval = setInterval(animateOverlay, 8000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Scroll detection for navbar
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Intersection Observer for scroll animations
   useEffect(() => {
@@ -303,54 +334,54 @@ export default function VGamingPage() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("animate-in")
+            entry.target.classList.add("animate-in");
           }
-        })
+        });
       },
-      { threshold: 0.1 }
-    )
+      { threshold: 0.1 },
+    );
 
     document.querySelectorAll(".scroll-animate").forEach((el) => {
-      observer.observe(el)
-    })
+      observer.observe(el);
+    });
 
-    return () => observer.disconnect()
-  }, [])
+    return () => observer.disconnect();
+  }, []);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      setFormData({ ...formData, photo: file })
-      const reader = new FileReader()
+      setFormData({ ...formData, photo: file });
+      const reader = new FileReader();
       reader.onloadend = () => {
-        setPhotoPreview(reader.result as string)
-      }
-      reader.readAsDataURL(file)
+        setPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
   const handleCategoryChange = (category: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       categories: prev.categories.includes(category)
-        ? prev.categories.filter(c => c !== category)
-        : [...prev.categories, category]
-    }))
-  }
+        ? prev.categories.filter((c) => c !== category)
+        : [...prev.categories, category],
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
     try {
       // Convert photo to base64 if exists
-      let photoBase64 = ""
+      let photoBase64 = "";
       if (formData.photo) {
-        const reader = new FileReader()
+        const reader = new FileReader();
         photoBase64 = await new Promise((resolve) => {
-          reader.onloadend = () => resolve(reader.result as string)
-          reader.readAsDataURL(formData.photo as File)
-        })
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(formData.photo as File);
+        });
       }
 
       // Prepare enrollment data for API
@@ -359,7 +390,10 @@ export default function VGamingPage() {
         pseudo: formData.pseudo,
         birthDate: formData.birthDate,
         birthPlace: formData.birthPlace,
-        howHeard: formData.howHeard === "other" ? formData.howHeardOther : formData.howHeard,
+        howHeard:
+          formData.howHeard === "other"
+            ? formData.howHeardOther
+            : formData.howHeard,
         howHeardSource: formData.howHeard,
         photo: photoBase64,
         phone: formData.phone,
@@ -367,19 +401,24 @@ export default function VGamingPage() {
         hasTeam: formData.hasTeam,
         categories: formData.categories.join(", "),
         language: lang,
-      }
+      };
 
       if (!isSupabaseConfigured) {
-        console.warn("[v0] Supabase configuration missing, skipping backend submission and continuing with local redirect.")
+        console.warn(
+          "[v0] Supabase configuration missing, skipping backend submission and continuing with local redirect.",
+        );
 
-        localStorage.setItem("vgaming-enrollment", JSON.stringify(enrollmentData))
-        localStorage.setItem("vgaming-lang", lang)
+        localStorage.setItem(
+          "vgaming-enrollment",
+          JSON.stringify(enrollmentData),
+        );
+        localStorage.setItem("vgaming-lang", lang);
 
-        window.location.href = "/payment"
-        return
+        window.location.href = "/payment";
+        return;
       }
 
-      console.log("[v0] Submitting enrollment to API...")
+      console.log("[v0] Submitting enrollment to API...");
 
       // Send to API route (handles DB storage + GHL webhook)
       const response = await fetch("/api/enrollment", {
@@ -388,49 +427,65 @@ export default function VGamingPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(enrollmentData),
-      })
+      });
 
-      const responseClone = response.clone()
-      let result: any
+      const responseClone = response.clone();
+      let result: any;
       try {
-        result = await response.json()
+        result = await response.json();
       } catch (e) {
-        const rawText = await responseClone.text().catch(() => "")
-        const message = e instanceof Error ? e.message : String(e)
-        result = { error: `Invalid JSON response: ${message}`, rawText }
+        const rawText = await responseClone.text().catch(() => "");
+        const message = e instanceof Error ? e.message : String(e);
+        result = { error: `Invalid JSON response: ${message}`, rawText };
       }
 
       if (!response.ok) {
-        const errorMessage = result.error || result.details || result.rawText || JSON.stringify(result)
+        const errorMessage =
+          result.error ||
+          result.details ||
+          result.rawText ||
+          JSON.stringify(result);
         console.error("[v0] API error:", {
           status: response.status,
           statusText: response.statusText,
           body: result,
           message: errorMessage,
-        })
-        throw new Error(errorMessage || `HTTP ${response.status}: ${response.statusText}`)
+        });
+        // If API fails, log the error but continue to payment page
+        console.warn(
+          "[v0] API submission failed, continuing with local storage only",
+        );
+      } else {
+        console.log("[v0] Enrollment submitted successfully:", result);
       }
 
-      console.log("[v0] Enrollment submitted successfully:", result)
-
-      // Store enrollment data for payment page
-      localStorage.setItem("vgaming-enrollment", JSON.stringify(enrollmentData))
-      localStorage.setItem("vgaming-lang", lang)
+      // Store enrollment data for payment page (always do this)
+      localStorage.setItem(
+        "vgaming-enrollment",
+        JSON.stringify(enrollmentData),
+      );
+      localStorage.setItem("vgaming-lang", lang);
 
       // Redirect to payment page
-      window.location.href = "/payment"
+      window.location.href = "/payment";
     } catch (error) {
-      console.error("Submission error:", error)
-      alert(lang === "en" ? "An error occurred. Please try again." : "Une erreur s'est produite. Veuillez réessayer.")
+      console.error("Submission error:", error);
+      alert(
+        lang === "en"
+          ? "An error occurred. Please try again."
+          : "Une erreur s'est produite. Veuillez réessayer.",
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "bg-background/95 backdrop-blur-md shadow-lg" : "bg-transparent"}`}>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "bg-background/95 backdrop-blur-md shadow-lg" : "bg-transparent"}`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
@@ -448,11 +503,36 @@ export default function VGamingPage() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
-              <a href="#home" className="text-foreground/80 hover:text-primary transition-colors">{t.nav.home}</a>
-              <a href="#about" className="text-foreground/80 hover:text-primary transition-colors">{t.nav.about}</a>
-              <a href="#services" className="text-foreground/80 hover:text-primary transition-colors">{t.nav.services}</a>
-              <a href="#challenge" className="text-foreground/80 hover:text-primary transition-colors">{t.nav.challenge}</a>
-              <a href="#contact" className="text-foreground/80 hover:text-primary transition-colors">{t.nav.contact}</a>
+              <a
+                href="#home"
+                className="text-foreground/80 hover:text-primary transition-colors"
+              >
+                {t.nav.home}
+              </a>
+              <a
+                href="#about"
+                className="text-foreground/80 hover:text-primary transition-colors"
+              >
+                {t.nav.about}
+              </a>
+              <a
+                href="#services"
+                className="text-foreground/80 hover:text-primary transition-colors"
+              >
+                {t.nav.services}
+              </a>
+              <a
+                href="#challenge"
+                className="text-foreground/80 hover:text-primary transition-colors"
+              >
+                {t.nav.challenge}
+              </a>
+              <a
+                href="#contact"
+                className="text-foreground/80 hover:text-primary transition-colors"
+              >
+                {t.nav.contact}
+              </a>
             </div>
 
             {/* Language Toggle & Mobile Menu */}
@@ -462,33 +542,74 @@ export default function VGamingPage() {
                 className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 hover:border-primary hover:bg-primary/10 transition-all"
               >
                 <Globe className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">{lang.toUpperCase()}</span>
+                <span className="text-sm font-medium">
+                  {lang.toUpperCase()}
+                </span>
               </button>
 
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="md:hidden p-2 text-foreground"
               >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {mobileMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
               </button>
             </div>
           </div>
         </div>
 
         {/* Mobile Menu */}
-        <div className={`md:hidden absolute top-full left-0 right-0 bg-background/98 backdrop-blur-md border-t border-border transition-all duration-300 ${mobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}>
+        <div
+          className={`md:hidden absolute top-full left-0 right-0 bg-background/98 backdrop-blur-md border-t border-border transition-all duration-300 ${mobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
+        >
           <div className="px-4 py-6 space-y-4">
-            <a href="#home" onClick={() => setMobileMenuOpen(false)} className="block text-lg text-foreground/80 hover:text-primary transition-colors">{t.nav.home}</a>
-            <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block text-lg text-foreground/80 hover:text-primary transition-colors">{t.nav.about}</a>
-            <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block text-lg text-foreground/80 hover:text-primary transition-colors">{t.nav.services}</a>
-            <a href="#challenge" onClick={() => setMobileMenuOpen(false)} className="block text-lg text-foreground/80 hover:text-primary transition-colors">{t.nav.challenge}</a>
-            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block text-lg text-foreground/80 hover:text-primary transition-colors">{t.nav.contact}</a>
+            <a
+              href="#home"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-lg text-foreground/80 hover:text-primary transition-colors"
+            >
+              {t.nav.home}
+            </a>
+            <a
+              href="#about"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-lg text-foreground/80 hover:text-primary transition-colors"
+            >
+              {t.nav.about}
+            </a>
+            <a
+              href="#services"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-lg text-foreground/80 hover:text-primary transition-colors"
+            >
+              {t.nav.services}
+            </a>
+            <a
+              href="#challenge"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-lg text-foreground/80 hover:text-primary transition-colors"
+            >
+              {t.nav.challenge}
+            </a>
+            <a
+              href="#contact"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-lg text-foreground/80 hover:text-primary transition-colors"
+            >
+              {t.nav.contact}
+            </a>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section id="home" className="relative min-h-screen flex items-center justify-center">
+      <section
+        id="home"
+        className="relative min-h-screen flex items-center justify-center"
+      >
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
@@ -581,7 +702,10 @@ export default function VGamingPage() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 md:py-30 bg-gradient-to-b from-background to-card">
+      <section
+        id="about"
+        className="py-20 md:py-30 bg-gradient-to-b from-background to-card"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Text Content */}
@@ -596,28 +720,52 @@ export default function VGamingPage() {
                 {t.about.description}
               </p>
               <div className="mb-8 space-y-4">
-                <p className="text-foreground/70 text-lg leading-relaxed">{t.about.description2}</p>
-                <p className="text-foreground/70 text-lg leading-relaxed"><Target className="inline w-5 h-5 text-primary mr-2" /> {t.about.description3}</p>
-                <p className="text-foreground/70 text-lg leading-relaxed"><Trophy className="inline w-5 h-5 text-primary mr-2" /> {t.about.description4}</p>
+                <p className="text-foreground/70 text-lg leading-relaxed">
+                  {t.about.description2}
+                </p>
+                <p className="text-foreground/70 text-lg leading-relaxed">
+                  <Target className="inline w-5 h-5 text-primary mr-2" />{" "}
+                  {t.about.description3}
+                </p>
+                <p className="text-foreground/70 text-lg leading-relaxed">
+                  <Trophy className="inline w-5 h-5 text-primary mr-2" />{" "}
+                  {t.about.description4}
+                </p>
               </div>
 
               {/* Stats */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
                 <div className="text-center p-4 rounded-xl bg-primary/10 border border-primary/20 hover:border-primary/40 transition-colors">
-                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">100+</div>
-                  <div className="text-sm text-foreground/60">{t.about.stats.visitors}</div>
+                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">
+                    100+
+                  </div>
+                  <div className="text-sm text-foreground/60">
+                    {t.about.stats.visitors}
+                  </div>
                 </div>
                 <div className="text-center p-4 rounded-xl bg-secondary/20 border border-secondary/30 hover:border-secondary/50 transition-colors">
-                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">2</div>
-                  <div className="text-sm text-foreground/60">{t.about.stats.games}</div>
+                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">
+                    2
+                  </div>
+                  <div className="text-sm text-foreground/60">
+                    {t.about.stats.games}
+                  </div>
                 </div>
                 <div className="text-center p-4 rounded-xl bg-primary/10 border border-primary/20 hover:border-primary/40 transition-colors">
-                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">{t.about.edition}</div>
-                  <div className="text-sm text-foreground/60">{t.about.stats.events}</div>
+                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">
+                    {t.about.edition}
+                  </div>
+                  <div className="text-sm text-foreground/60">
+                    {t.about.stats.events}
+                  </div>
                 </div>
                 <div className="text-center p-4 rounded-xl bg-secondary/20 border border-secondary/30 hover:border-secondary/50 transition-colors">
-                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">1</div>
-                  <div className="text-sm text-foreground/60">{t.about.stats.years}</div>
+                  <div className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary">
+                    1
+                  </div>
+                  <div className="text-sm text-foreground/60">
+                    {t.about.stats.years}
+                  </div>
                 </div>
               </div>
             </div>
@@ -635,8 +783,12 @@ export default function VGamingPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
                   <div className="px-4 py-3 bg-card/80 backdrop-blur-sm rounded-xl border border-border">
-                    <p className="font-[family-name:var(--font-orbitron)] text-primary font-bold">VGaming</p>
-                    <p className="text-sm text-foreground/70">Montée Anor, Bastos</p>
+                    <p className="font-[family-name:var(--font-orbitron)] text-primary font-bold">
+                      VGaming
+                    </p>
+                    <p className="text-sm text-foreground/70">
+                      Montée Anor, Bastos
+                    </p>
                   </div>
                 </div>
               </div>
@@ -679,10 +831,19 @@ export default function VGamingPage() {
         </div>
       </section>
       {/* Rewards Section */}
-      <section id="rewards" className="py-20 md:py-32 bg-gradient-to-b from-background to-card relative overflow-hidden">
+      <section
+        id="rewards"
+        className="py-20 md:py-32 bg-gradient-to-b from-background to-card relative overflow-hidden"
+      >
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a227' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a227' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+            }}
+          />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -700,7 +861,9 @@ export default function VGamingPage() {
             {/* Quote Block */}
             <blockquote className="relative mb-12 max-w-2xl mx-auto">
               <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border-l-4 border-primary pl-8 pr-8 py-6 rounded-r-lg shadow-lg">
-                <p className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary italic mb-4">{t.rewards.quote}</p>
+                <p className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary italic mb-4">
+                  {t.rewards.quote}
+                </p>
                 <cite className="text-foreground/60 text-sm font-medium">
                   — VGaming Tournament
                 </cite>
@@ -710,10 +873,19 @@ export default function VGamingPage() {
         </div>
       </section>
       {/* Challenge Registration Section */}
-      <section id="challenge" className="py-20 md:py-25 bg-gradient-to-b from-card to-background relative overflow-hidden">
+      <section
+        id="challenge"
+        className="py-20 md:py-25 bg-gradient-to-b from-card to-background relative overflow-hidden"
+      >
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a227' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a227' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+            }}
+          />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -741,7 +913,9 @@ export default function VGamingPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <div className="text-center bg-secondary/80 backdrop-blur-sm rounded-xl py-4 px-6 border border-primary/30">
-                    <p className="text-foreground/90 text-sm mb-2">{t.challenge.prize}</p>
+                    <p className="text-foreground/90 text-sm mb-2">
+                      {t.challenge.prize}
+                    </p>
                     <p className="font-[family-name:var(--font-orbitron)] text-4xl md:text-5xl font-black text-primary drop-shadow-lg">
                       2,000,000 <span className="text-xl">FCFA</span>
                     </p>
@@ -780,7 +954,10 @@ export default function VGamingPage() {
 
             {/* Registration Form */}
             <div className="scroll-animate opacity-0 translate-y-10 transition-all duration-700 delay-200">
-              <form onSubmit={handleSubmit} className="bg-card/50 backdrop-blur-sm rounded-2xl border border-border p-6 md:p-8 shadow-xl">
+              <form
+                onSubmit={handleSubmit}
+                className="bg-card/50 backdrop-blur-sm rounded-2xl border border-border p-6 md:p-8 shadow-xl"
+              >
                 <div className="space-y-5">
                   {/* Full Name */}
                   <div>
@@ -791,7 +968,9 @@ export default function VGamingPage() {
                       type="text"
                       required
                       value={formData.fullName}
-                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, fullName: e.target.value })
+                      }
                       className="w-full px-4 py-3 rounded-xl bg-input border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground placeholder:text-muted-foreground"
                       placeholder="Jean Dupont"
                     />
@@ -806,7 +985,9 @@ export default function VGamingPage() {
                       type="text"
                       required
                       value={formData.pseudo}
-                      onChange={(e) => setFormData({ ...formData, pseudo: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, pseudo: e.target.value })
+                      }
                       className="w-full px-4 py-3 rounded-xl bg-input border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground placeholder:text-muted-foreground"
                       placeholder="ProGamer237"
                     />
@@ -822,7 +1003,12 @@ export default function VGamingPage() {
                         type="date"
                         required
                         value={formData.birthDate}
-                        onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            birthDate: e.target.value,
+                          })
+                        }
                         className="w-full px-4 py-3 rounded-xl bg-input border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground"
                       />
                     </div>
@@ -834,7 +1020,12 @@ export default function VGamingPage() {
                         type="text"
                         required
                         value={formData.birthPlace}
-                        onChange={(e) => setFormData({ ...formData, birthPlace: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            birthPlace: e.target.value,
+                          })
+                        }
                         className="w-full px-4 py-3 rounded-xl bg-input border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground placeholder:text-muted-foreground"
                         placeholder="Yaoundé"
                       />
@@ -849,14 +1040,28 @@ export default function VGamingPage() {
                     <select
                       required
                       value={formData.howHeard}
-                      onChange={(e) => setFormData({ ...formData, howHeard: e.target.value, howHeardOther: "" })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          howHeard: e.target.value,
+                          howHeardOther: "",
+                        })
+                      }
                       className="w-full px-4 py-3 rounded-xl bg-input border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground"
                     >
                       <option value="">--</option>
-                      <option value="social">{t.challenge.howHeardOptions.social}</option>
-                      <option value="friend">{t.challenge.howHeardOptions.friend}</option>
-                      <option value="event">{t.challenge.howHeardOptions.event}</option>
-                      <option value="other">{t.challenge.howHeardOptions.other}</option>
+                      <option value="social">
+                        {t.challenge.howHeardOptions.social}
+                      </option>
+                      <option value="friend">
+                        {t.challenge.howHeardOptions.friend}
+                      </option>
+                      <option value="event">
+                        {t.challenge.howHeardOptions.event}
+                      </option>
+                      <option value="other">
+                        {t.challenge.howHeardOptions.other}
+                      </option>
                     </select>
                   </div>
 
@@ -870,9 +1075,18 @@ export default function VGamingPage() {
                         type="text"
                         required
                         value={formData.howHeardOther}
-                        onChange={(e) => setFormData({ ...formData, howHeardOther: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            howHeardOther: e.target.value,
+                          })
+                        }
                         className="w-full px-4 py-3 rounded-xl bg-input border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground placeholder:text-muted-foreground"
-                        placeholder={lang === "en" ? "Please specify how you heard about us" : "Veuillez préciser comment vous avez entendu parler de nous"}
+                        placeholder={
+                          lang === "en"
+                            ? "Please specify how you heard about us"
+                            : "Veuillez préciser comment vous avez entendu parler de nous"
+                        }
                       />
                     </div>
                   )}
@@ -882,25 +1096,32 @@ export default function VGamingPage() {
                     <label className="block text-sm font-medium text-foreground/80 mb-2">
                       {t.challenge.form.categories} *
                     </label>
-                    <p className="text-xs text-muted-foreground mb-3">{t.challenge.form.categoriesHint}</p>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      {t.challenge.form.categoriesHint}
+                    </p>
                     <div className="grid grid-cols-2 gap-3">
-                      {Object.entries(t.challenge.categoryOptions).map(([key, label]) => (
-                        <label
-                          key={key}
-                          className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${formData.categories.includes(key)
-                              ? "bg-primary/20 border-primary"
-                              : "bg-input border-border hover:border-primary/50"
+                      {Object.entries(t.challenge.categoryOptions).map(
+                        ([key, label]) => (
+                          <label
+                            key={key}
+                            className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                              formData.categories.includes(key)
+                                ? "bg-primary/20 border-primary"
+                                : "bg-input border-border hover:border-primary/50"
                             }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={formData.categories.includes(key)}
-                            onChange={() => handleCategoryChange(key)}
-                            className="w-5 h-5 text-primary accent-primary"
-                          />
-                          <span className="text-foreground/80 text-sm font-medium">{label}</span>
-                        </label>
-                      ))}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={formData.categories.includes(key)}
+                              onChange={() => handleCategoryChange(key)}
+                              className="w-5 h-5 text-primary accent-primary"
+                            />
+                            <span className="text-foreground/80 text-sm font-medium">
+                              {label}
+                            </span>
+                          </label>
+                        ),
+                      )}
                     </div>
                   </div>
 
@@ -925,7 +1146,9 @@ export default function VGamingPage() {
                       ) : (
                         <>
                           <Upload className="w-10 h-10 mx-auto text-muted-foreground mb-2" />
-                          <p className="text-sm text-muted-foreground">{t.challenge.form.uploadPhoto}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {t.challenge.form.uploadPhoto}
+                          </p>
                         </>
                       )}
                       <input
@@ -947,7 +1170,9 @@ export default function VGamingPage() {
                       type="tel"
                       required
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
                       className="w-full px-4 py-3 rounded-xl bg-input border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground placeholder:text-muted-foreground"
                       placeholder="+237 6XX XXX XXX"
                     />
@@ -965,10 +1190,14 @@ export default function VGamingPage() {
                           name="level"
                           value="amateur"
                           checked={formData.level === "amateur"}
-                          onChange={(e) => setFormData({ ...formData, level: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, level: e.target.value })
+                          }
                           className="w-5 h-5 text-primary accent-primary"
                         />
-                        <span className="text-foreground/80">{t.challenge.form.amateur}</span>
+                        <span className="text-foreground/80">
+                          {t.challenge.form.amateur}
+                        </span>
                       </label>
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
@@ -976,10 +1205,14 @@ export default function VGamingPage() {
                           name="level"
                           value="professional"
                           checked={formData.level === "professional"}
-                          onChange={(e) => setFormData({ ...formData, level: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, level: e.target.value })
+                          }
                           className="w-5 h-5 text-primary accent-primary"
                         />
-                        <span className="text-foreground/80">{t.challenge.form.professional}</span>
+                        <span className="text-foreground/80">
+                          {t.challenge.form.professional}
+                        </span>
                       </label>
                     </div>
                   </div>
@@ -996,10 +1229,17 @@ export default function VGamingPage() {
                           name="hasTeam"
                           value="yes"
                           checked={formData.hasTeam === "yes"}
-                          onChange={(e) => setFormData({ ...formData, hasTeam: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              hasTeam: e.target.value,
+                            })
+                          }
                           className="w-5 h-5 text-primary accent-primary"
                         />
-                        <span className="text-foreground/80">{t.challenge.form.yes}</span>
+                        <span className="text-foreground/80">
+                          {t.challenge.form.yes}
+                        </span>
                       </label>
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
@@ -1007,10 +1247,17 @@ export default function VGamingPage() {
                           name="hasTeam"
                           value="no"
                           checked={formData.hasTeam === "no"}
-                          onChange={(e) => setFormData({ ...formData, hasTeam: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              hasTeam: e.target.value,
+                            })
+                          }
                           className="w-5 h-5 text-primary accent-primary"
                         />
-                        <span className="text-foreground/80">{t.challenge.form.no}</span>
+                        <span className="text-foreground/80">
+                          {t.challenge.form.no}
+                        </span>
                       </label>
                     </div>
                   </div>
@@ -1021,7 +1268,9 @@ export default function VGamingPage() {
                     disabled={isSubmitting}
                     className="w-full py-4 bg-primary text-primary-foreground font-bold text-lg rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
                   >
-                    {isSubmitting ? t.challenge.form.submitting : t.challenge.form.submit}
+                    {isSubmitting
+                      ? t.challenge.form.submitting
+                      : t.challenge.form.submit}
                   </button>
                 </div>
               </form>
@@ -1048,16 +1297,28 @@ export default function VGamingPage() {
               <p className="text-foreground/60 mb-6">{t.footer.tagline}</p>
               {/* Social Media */}
               <div className="flex gap-4">
-                <a href="https://www.facebook.com/profile.php?id=61576271970269&sk=reels_tab" className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all">
+                <a
+                  href="https://www.facebook.com/profile.php?id=61576271970269&sk=reels_tab"
+                  className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all"
+                >
                   <Facebook className="w-5 h-5" />
                 </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all">
+                <a
+                  href="#"
+                  className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all"
+                >
                   <Instagram className="w-5 h-5" />
                 </a>
-                <a href="https://www.tiktok.com/@vgaming_bastos" className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all">
+                <a
+                  href="https://www.tiktok.com/@vgaming_bastos"
+                  className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all"
+                >
                   <TikTokIcon className="w-5 h-5" />
                 </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all">
+                <a
+                  href="#"
+                  className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all"
+                >
                   <Youtube className="w-5 h-5" />
                 </a>
               </div>
@@ -1065,44 +1326,88 @@ export default function VGamingPage() {
 
             {/* Practical Information */}
             <div>
-              <h4 className="font-[family-name:var(--font-orbitron)] font-bold text-lg mb-4">{t.practical.title}</h4>
+              <h4 className="font-[family-name:var(--font-orbitron)] font-bold text-lg mb-4">
+                {t.practical.title}
+              </h4>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <p className="text-foreground/70 text-sm">{t.practical.location}</p>
+                  <p className="text-foreground/70 text-sm">
+                    {t.practical.location}
+                  </p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <p className="text-foreground/70 text-sm">{t.practical.dates}</p>
+                  <p className="text-foreground/70 text-sm">
+                    {t.practical.dates}
+                  </p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Gamepad className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <p className="text-foreground/70 text-sm">{t.practical.disciplines}</p>
+                  <p className="text-foreground/70 text-sm">
+                    {t.practical.disciplines}
+                  </p>
                 </div>
                 <div className="flex items-start gap-3">
                   <MessageCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <p className="text-foreground/70 text-sm">{t.practical.registration}</p>
+                  <p className="text-foreground/70 text-sm">
+                    {t.practical.registration}
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* Quick Links */}
             <div>
-              <h4 className="font-[family-name:var(--font-orbitron)] font-bold text-lg mb-4">Quick Links</h4>
+              <h4 className="font-[family-name:var(--font-orbitron)] font-bold text-lg mb-4">
+                Quick Links
+              </h4>
               <div className="space-y-2">
-                <a href="#home" className="block text-foreground/70 hover:text-primary transition-colors text-sm">{t.nav.home}</a>
-                <a href="#about" className="block text-foreground/70 hover:text-primary transition-colors text-sm">{t.nav.about}</a>
-                <a href="#services" className="block text-foreground/70 hover:text-primary transition-colors text-sm">{t.nav.services}</a>
-                <a href="#challenge" className="block text-foreground/70 hover:text-primary transition-colors text-sm">{t.nav.challenge}</a>
+                <a
+                  href="#home"
+                  className="block text-foreground/70 hover:text-primary transition-colors text-sm"
+                >
+                  {t.nav.home}
+                </a>
+                <a
+                  href="#about"
+                  className="block text-foreground/70 hover:text-primary transition-colors text-sm"
+                >
+                  {t.nav.about}
+                </a>
+                <a
+                  href="#services"
+                  className="block text-foreground/70 hover:text-primary transition-colors text-sm"
+                >
+                  {t.nav.services}
+                </a>
+                <a
+                  href="#challenge"
+                  className="block text-foreground/70 hover:text-primary transition-colors text-sm"
+                >
+                  {t.nav.challenge}
+                </a>
               </div>
             </div>
 
             {/* Legal */}
             <div>
-              <h4 className="font-[family-name:var(--font-orbitron)] font-bold text-lg mb-4">Legal</h4>
+              <h4 className="font-[family-name:var(--font-orbitron)] font-bold text-lg mb-4">
+                Legal
+              </h4>
               <div className="space-y-2">
-                <a href="#" className="block text-foreground/70 hover:text-primary transition-colors text-sm">{t.footer.terms}</a>
-                <a href="#" className="block text-foreground/70 hover:text-primary transition-colors text-sm">{t.footer.privacy}</a>
+                <a
+                  href="#"
+                  className="block text-foreground/70 hover:text-primary transition-colors text-sm"
+                >
+                  {t.footer.terms}
+                </a>
+                <a
+                  href="#"
+                  className="block text-foreground/70 hover:text-primary transition-colors text-sm"
+                >
+                  {t.footer.privacy}
+                </a>
               </div>
             </div>
           </div>
@@ -1130,7 +1435,8 @@ export default function VGamingPage() {
         }
 
         @keyframes scroll-indicator {
-          0%, 100% {
+          0%,
+          100% {
             transform: translateY(0);
             opacity: 1;
           }
@@ -1179,7 +1485,7 @@ export default function VGamingPage() {
         }
       `}</style>
     </div>
-  )
+  );
 }
 
 // Service Card Component
@@ -1187,12 +1493,12 @@ function ServiceCard({
   image,
   title,
   description,
-  delay
+  delay,
 }: {
-  image: string
-  title: string
-  description: string
-  delay: number
+  image: string;
+  title: string;
+  description: string;
+  delay: number;
 }) {
   return (
     <figure
@@ -1218,5 +1524,5 @@ function ServiceCard({
         </p>
       </figcaption>
     </figure>
-  )
+  );
 }

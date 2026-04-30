@@ -12,11 +12,11 @@ const whatsappLinks = {
 
 const categoryNames = {
   en: {
-    fc26: "EA FC",
+    fc26: "FC26",
     billiard: "Billiard",
   },
   fr: {
-    fc26: "EA FC",
+    fc26: "FC26",
     billiard: "Billard",
   },
 };

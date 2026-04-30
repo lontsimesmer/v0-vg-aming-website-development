@@ -21,8 +21,9 @@ const isSupabaseConfigValid = () => {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log("[v0] POST /api/enrollment called");
     if (!isSupabaseConfigValid()) {
-      // console.error("[v0] Supabase configuration invalid or missing");
+      console.error("[v0] Supabase config invalid");
       return NextResponse.json(
         {
           error: "Supabase environment is not configured or invalid",
@@ -35,6 +36,7 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient();
     const data = await request.json();
+    console.log("[v0] Received data:", Object.keys(data));
 
     // Insert enrollment into database
     const { data: enrollment, error: enrollmentError } = await supabase
@@ -62,10 +64,14 @@ export async function POST(request: NextRequest) {
         {
           error: "Failed to save enrollment",
           details: enrollmentError.message,
+          code: enrollmentError.code,
+          hint: enrollmentError.hint,
         },
         { status: 500 },
       );
     }
+
+    console.log("[v0] Enrollment inserted:", enrollment.id);
 
     // Prepare webhook payload
     const webhookPayload = {
@@ -127,6 +133,7 @@ export async function POST(request: NextRequest) {
         response_body: ghlResponseBody,
         success: ghlSuccess,
         error_message: ghlErrorMessage || null,
+        executed_at: new Date().toISOString(),
       });
 
     if (logError) {
@@ -341,6 +348,12 @@ export async function GET(request: NextRequest) {
 
       logsData = logsResult.data || [];
       logsError = logsResult.error;
+      console.log(
+        `[v0] Fetched ${logsData.length} logs for ${enrollmentIds.length} enrollments`,
+      );
+      if (logsData.length > 0) {
+        console.log("[v0] Sample log:", logsData[0]);
+      }
     }
 
     if (logsError) {
@@ -358,8 +371,45 @@ export async function GET(request: NextRequest) {
         logsByEnrollment[log.enrollment_id].push(log);
       }
     }
+    console.log(
+      `[v0] Grouped logs: ${Object.keys(logsByEnrollment).length} enrollments have logs`,
+    );
 
-    // Combine enrollments with their logs
+    // Efficiently get global stats by counting distinct enrollments
+    // Successful: enrollments with at least one successful log
+    const { data: successfulEnrollments, error: successfulError } =
+      await supabase
+        .from("ghl_execution_logs")
+        .select("enrollment_id", { count: "exact" })
+        .eq("success", true);
+
+    // Failed: enrollments with failed logs but no successful logs
+    const { data: failedEnrollments, error: failedError } = await supabase.from(
+      "ghl_execution_logs",
+    ).select(`
+        enrollment_id,
+        success
+      `);
+
+    // Calculate stats from the data
+    const successfulIds = new Set(
+      successfulEnrollments?.map((log) => log.enrollment_id) || [],
+    );
+    const totalSuccessful = successfulIds.size;
+
+    // Failed are enrollments that have failed logs but are not in successful
+    const failedIds = new Set();
+    if (failedEnrollments) {
+      for (const log of failedEnrollments) {
+        if (!log.success && !successfulIds.has(log.enrollment_id)) {
+          failedIds.add(log.enrollment_id);
+        }
+      }
+    }
+    const totalFailed = failedIds.size;
+
+    // Calculate pending: enrollments with no logs at all
+    const totalPending = (count || 0) - totalSuccessful - totalFailed;
     const enrollments = enrollmentsData.map((enrollment) => ({
       ...enrollment,
       ghl_execution_logs: logsByEnrollment[enrollment.id] || [],
@@ -372,6 +422,12 @@ export async function GET(request: NextRequest) {
         limit,
         total: count,
         totalPages: Math.ceil((count || 0) / limit),
+      },
+      stats: {
+        totalEnrollments: count || 0,
+        successfulSyncs: totalSuccessful,
+        failedSyncs: totalFailed,
+        pendingSyncs: Math.max(totalPending, 0),
       },
     });
   } catch (error) {

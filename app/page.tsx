@@ -39,6 +39,68 @@ const isSupabaseConfigured =
   !SUPABASE_URL.includes("your_supabase") &&
   !SUPABASE_ANON_KEY.includes("your_");
 
+// Typing Text Component
+function TypingText({
+  texts,
+  speed = 50,
+  deleteSpeed = 30,
+  delayBetween = 2000,
+}: {
+  texts: string[];
+  speed?: number;
+  deleteSpeed?: number;
+  delayBetween?: number;
+}) {
+  const [displayedText, setDisplayedText] = useState("");
+  const [textIndex, setTextIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    const currentText = texts[textIndex];
+
+    if (!isDeleting) {
+      if (displayedText.length < currentText.length) {
+        timeout = setTimeout(() => {
+          setDisplayedText(currentText.substring(0, displayedText.length + 1));
+        }, speed);
+      } else {
+        timeout = setTimeout(() => {
+          setIsDeleting(true);
+        }, delayBetween);
+      }
+    } else {
+      if (displayedText.length > 0) {
+        timeout = setTimeout(() => {
+          setDisplayedText(
+            displayedText.substring(0, displayedText.length - 1),
+          );
+        }, deleteSpeed);
+      } else {
+        setIsDeleting(false);
+        setTextIndex((prev) => (prev + 1) % texts.length);
+      }
+    }
+
+    return () => clearTimeout(timeout);
+  }, [
+    displayedText,
+    isDeleting,
+    textIndex,
+    texts,
+    speed,
+    deleteSpeed,
+    delayBetween,
+  ]);
+
+  return (
+    <span className="inline-block min-h-[1.2em]">
+      {displayedText}
+      <span className="ml-1 inline-block w-0.5 h-[1.2em] bg-primary animate-pulse" />
+    </span>
+  );
+}
+
 // Custom TikTok Icon Component
 function TikTokIcon({ className }: { className?: string }) {
   return (
@@ -60,20 +122,19 @@ const translations = {
     },
     hero: {
       title: "VGaming Grand Tournament",
-      subtitle: "The game reaches a new level.",
       eventInfo: {
-        location: "Yaoundé",
+        location: "Yaounde, Bastos",
         date: "May 16 & 17, 2026",
         prize: "2,000,000 FCFA in Prizes",
       },
-      cta: "Join The Challenge",
+      cta: "Join the Challenge",
       scroll: "Scroll to explore",
     },
     about: {
       title: "The Concept",
       subtitle: "A Competition. Pressure. Selection.",
       description:
-        "The VGaming Grand Tournament brings together the most determined players around two major disciplines: EA FC and Billiards.",
+        "The VGaming Grand Tournament brings together the most determined players around two major disciplines: EA FC26 and Billiards.",
       description2: "Here, it's not just about participating.",
       description3: "It's about performing.",
       description4: "It's about winning.",
@@ -90,14 +151,14 @@ const translations = {
       subtitle: "Master Two Major Games",
       items: {
         eafc: {
-          title: "EA FC",
+          title: "EA FC26",
           description:
-            "64 players (amateurs & pros) | Single-elimination format + Super Final | Fast-paced and intense matches",
+            "64 players (amateurs & professionals) | Single-elimination format + Super Final | Fast-paced and intense matches",
         },
         billiards: {
           title: "Billiards",
           description:
-            "64 pro players & 32 amateur players | Group stage + elimination | Precision, strategy, and composure",
+            "64 professional players & 32 amateur players | Group stage + elimination | Precision, strategy, and composure",
         },
       },
     },
@@ -131,7 +192,7 @@ const translations = {
         yes: "Yes",
         no: "No",
         categories: "Select your competition category",
-        categoriesHint: "Select the discipline(s) you'll compete in",
+        categoriesHint: "Select the discipline you'll compete in",
         submit: "Register Now",
         submitting: "Registering...",
       },
@@ -145,6 +206,36 @@ const translations = {
         fc26: "FC26",
         billiard: "Billiards",
       },
+      registrationFees: {
+        title: "Registration Fees",
+        subtitle: "Choose your discipline and level",
+        description:
+          "Our registration fees are transparent and competitive. Select your category and player level to see the corresponding fee.",
+        categories: {
+          fc26: {
+            title: "FC26",
+            amateur: {
+              level: "Amateur",
+              fee: "5,000 FCFA",
+            },
+            professional: {
+              level: "Professional",
+              fee: "10,000 FCFA",
+            },
+          },
+          billiard: {
+            title: "Billiards",
+            amateur: {
+              level: "Amateur",
+              fee: "5,000 FCFA",
+            },
+            professional: {
+              level: "Professional",
+              fee: "20,000 FCFA",
+            },
+          },
+        },
+      },
     },
     footer: {
       tagline: "Where Champions Compete",
@@ -157,9 +248,9 @@ const translations = {
     },
     practical: {
       title: "Practical Information",
-      location: "Yaounde",
+      location: "Yaounde, Bastos",
       dates: "May 16 & 17, 2026",
-      disciplines: "EA FC / Billiards",
+      disciplines: "FC26 / Billiards",
       registration: "Registration open",
     },
   },
@@ -173,9 +264,8 @@ const translations = {
     },
     hero: {
       title: "Grand Tournoi VGaming",
-      subtitle: "Le jeu atteint un nouveau niveau.",
       eventInfo: {
-        location: "Yaoundé",
+        location: "Yaoundé, Bastos",
         date: "16 & 17 Mai 2026",
         prize: "2 000 000 FCFA en Prix",
       },
@@ -186,7 +276,7 @@ const translations = {
       title: "Le Concept",
       subtitle: "Une Compétition. De la Pression. De la Sélection.",
       description:
-        "Le Grand Tournoi VGaming rassemble les joueurs les plus déterminés autour de deux disciplines majeures : EA FC et le Billard.",
+        "Le Grand Tournoi VGaming rassemble les joueurs les plus déterminés autour de deux disciplines majeures : EA FC26 et le Billard.",
       description2:
         "Ici, ce n'est pas seulement une question de participation.",
       description3: "C'est une question de performance.",
@@ -204,14 +294,14 @@ const translations = {
       subtitle: "Maîtrisez Deux Jeux Majeurs",
       items: {
         eafc: {
-          title: "EA FC",
+          title: "EA FC26",
           description:
-            "64 joueurs (amateurs & pros) | Format à élimination directe + Super Finale | Matchs rapides et intenses",
+            "64 joueurs (amateurs & professionnels) | Format à élimination directe + Super Finale | Matchs rapides et intenses",
         },
         billiards: {
           title: "Billard",
           description:
-            "64 joueurs pros & 32 joueurs amateurs | Phase de groupes + élimination | Précision, stratégie et sang-froid",
+            "64 joueurs professionnels & 32 joueurs amateurs | Phase de groupes + élimination | Précision, stratégie et sang-froid",
         },
       },
     },
@@ -247,7 +337,7 @@ const translations = {
         no: "Non",
         categories: "Sélectionnez votre catégorie de compétition",
         categoriesHint:
-          "Sélectionnez la(les) discipline(s) dans laquelle vous allez concourir",
+          "Sélectionnez la discipline dans laquelle vous allez concourir",
         submit: "S'inscrire Maintenant",
         submitting: "Inscription en cours...",
       },
@@ -261,6 +351,36 @@ const translations = {
         fc26: "FC26",
         billiard: "Billard",
       },
+      registrationFees: {
+        title: "Frais d'Inscription",
+        subtitle: "Choisissez votre discipline et votre niveau",
+        description:
+          "Nos frais d'inscription sont transparents et compétitifs. Sélectionnez votre catégorie et votre niveau de joueur pour voir les frais correspondants.",
+        categories: {
+          fc26: {
+            title: "FC26",
+            amateur: {
+              level: "Amateur",
+              fee: "5 000 FCFA",
+            },
+            professional: {
+              level: "Professionnel",
+              fee: "10 000 FCFA",
+            },
+          },
+          billiard: {
+            title: "Billard",
+            amateur: {
+              level: "Amateur",
+              fee: "5 000 FCFA",
+            },
+            professional: {
+              level: "Professionnel",
+              fee: "20 000 FCFA",
+            },
+          },
+        },
+      },
     },
     footer: {
       tagline: "Où les Champions Compétissent",
@@ -273,7 +393,7 @@ const translations = {
     },
     practical: {
       title: "Informations Pratiques",
-      location: "Yaoundé",
+      location: "Yaoundé, Bastos",
       dates: "16 & 17 Mai 2026",
       disciplines: "EA FC / Billard",
       registration: "Inscriptions ouvertes",
@@ -297,7 +417,8 @@ export default function VGamingPage() {
     phone: "",
     level: "",
     hasTeam: "",
-    categories: [] as string[],
+    category: "",
+    consent: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -350,27 +471,57 @@ export default function VGamingPage() {
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setFormData({ ...formData, photo: file });
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+    if (!allowedTypes.includes(file.type)) {
+      alert(
+        lang === "en"
+          ? "Please upload a PNG, JPG, or JPEG image."
+          : "Veuillez télécharger une image PNG, JPG ou JPEG.",
+      );
+      return;
     }
+
+    setFormData({ ...formData, photo: file });
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPhotoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleCategoryChange = (category: string) => {
     setFormData((prev) => ({
       ...prev,
-      categories: prev.categories.includes(category)
-        ? prev.categories.filter((c) => c !== category)
-        : [...prev.categories, category],
+      category: category,
     }));
+  };
+
+  const getRegistrationFee = (): { level: string; fee: string } | null => {
+    if (!formData.category || !formData.level) return null;
+    const fees =
+      t.challenge.registrationFees.categories[
+        formData.category as keyof typeof t.challenge.registrationFees.categories
+      ];
+    if (!fees) return null;
+    const levelFee = fees[formData.level as keyof typeof fees];
+    if (typeof levelFee === "object" && levelFee && "fee" in levelFee) {
+      return levelFee as { level: string; fee: string };
+    }
+    return null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.consent) {
+      alert(
+        lang === "en"
+          ? "Please agree to the payment terms."
+          : "Veuillez accepter les conditions de paiement.",
+      );
+      return;
+    }
     setIsSubmitting(true);
 
     try {
@@ -399,7 +550,7 @@ export default function VGamingPage() {
         phone: formData.phone,
         level: formData.level,
         hasTeam: formData.hasTeam,
-        categories: formData.categories.join(", "),
+        categories: formData.category,
         language: lang,
       };
 
@@ -527,25 +678,25 @@ export default function VGamingPage() {
               >
                 {t.nav.challenge}
               </a>
-              <a
-                href="#contact"
-                className="text-foreground/80 hover:text-primary transition-colors"
-              >
-                {t.nav.contact}
-              </a>
             </div>
 
-            {/* Language Toggle & Mobile Menu */}
+            {/* Language Toggle, Contact Button & Mobile Menu */}
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setLang(lang === "en" ? "fr" : "en")}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 hover:border-primary hover:bg-primary/10 transition-all"
+                className="flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 hover:border-primary hover:bg-primary/10 transition-all"
               >
                 <Globe className="w-4 h-4 text-primary" />
                 <span className="text-sm font-medium">
                   {lang.toUpperCase()}
                 </span>
               </button>
+              <a
+                href="#contact"
+                className="inline-flex items-center justify-center px-4 py-2 rounded-full border border-primary/30 bg-primary/5 text-sm font-medium text-primary hover:bg-primary/10 transition-all"
+              >
+                Contact us
+              </a>
 
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -646,15 +797,24 @@ export default function VGamingPage() {
             />
           </div>
 
-          <h2 className="font-[family-name:var(--font-orbitron)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 animate-fade-in-up animation-delay-300">
-            {t.hero.title}
+          <h2 className="font-[family-name:var(--font-orbitron)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-10 animate-fade-in-up animation-delay-300">
+            <TypingText
+              texts={[
+                lang === "en"
+                  ? "VGaming Grand Tournament"
+                  : "Grand Tournoi VGaming",
+                lang === "en" ? "Ready to Go..." : "Prêt pour l'Aventure...",
+                lang === "en"
+                  ? "Registrations are open!"
+                  : "Inscivez-vous maintenant!",
+              ]}
+              speed={50}
+              deleteSpeed={30}
+              delayBetween={2500}
+            />
           </h2>
 
-          <p className="text-xl md:text-2xl text-foreground/80 mb-6 animate-fade-in-up animation-delay-400">
-            {t.hero.subtitle}
-          </p>
-
-          <div className="grid grid-cols-3 gap-6 mb-10 animate-fade-in-up animation-delay-450 max-w-lg mx-auto">
+          <div className="grid grid-cols-3 gap-6 mb-12 animate-fade-in-up animation-delay-450 max-w-lg mx-auto">
             <div className="text-center group">
               <div className="w-16 h-16 mx-auto mb-3 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary/20 group-hover:border-primary/40 group-hover:bg-primary/20 transition-all duration-300 shadow-lg">
                 <MapPin className="w-8 h-8 text-primary" />
@@ -684,7 +844,7 @@ export default function VGamingPage() {
           <div className="animate-fade-in-up animation-delay-500">
             <a
               href="#challenge"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-secondary font-bold text-lg rounded-full hover:bg-primary/90 hover:scale-105 transition-all duration-300 shadow-lg shadow-primary/30 border-2 border-primary/50"
+              className="inline-flex items-center gap-3 px-8 py-3 bg-primary text-secondary font-bold text-lg rounded-full hover:bg-primary/90 hover:scale-105 transition-all duration-300 shadow-lg shadow-primary/30 border-2 border-primary/50"
             >
               {t.hero.cta}
               <ChevronDown className="w-5 h-5 animate-bounce" />
@@ -693,7 +853,7 @@ export default function VGamingPage() {
         </div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center animate-fade-in-up animation-delay-700">
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-center animate-fade-in-up animation-delay-700 justify-center items-center flex-col hidden md:flex">
           <p className="text-sm text-foreground/60 mb-2">{t.hero.scroll}</p>
           <div className="w-6 h-10 rounded-full border-2 border-foreground/30 flex items-start justify-center p-1">
             <div className="w-1.5 h-3 bg-primary rounded-full animate-scroll-indicator" />
@@ -704,13 +864,13 @@ export default function VGamingPage() {
       {/* About Section */}
       <section
         id="about"
-        className="py-20 md:py-30 bg-gradient-to-b from-background to-card"
+        className="py-20 md:py-20 bg-gradient-to-b from-background to-card"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Text Content */}
             <div className="scroll-animate opacity-0 translate-y-10 transition-all duration-700">
-              <span className="inline-block px-4 py-2 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
                 {t.about.subtitle}
               </span>
               <h2 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
@@ -798,11 +958,11 @@ export default function VGamingPage() {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-20 md:py-30 bg-card">
+      <section id="services" className="py-20 md:py-20 bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-16 scroll-animate opacity-0 translate-y-10 transition-all duration-700">
-            <span className="inline-block px-4 py-2 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
               {t.services.subtitle}
             </span>
             <h2 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-4xl lg:text-5xl font-bold">
@@ -832,8 +992,8 @@ export default function VGamingPage() {
       </section>
       {/* Rewards Section */}
       <section
-        id="rewards"
-        className="py-20 md:py-32 bg-gradient-to-b from-background to-card relative overflow-hidden"
+        id="challenge"
+        className="py-20 md:py-22 bg-gradient-to-b from-background to-card relative overflow-hidden"
       >
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
@@ -848,7 +1008,7 @@ export default function VGamingPage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center scroll-animate opacity-0 translate-y-10 transition-all duration-700">
-            <span className="inline-block px-4 py-2 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
               {t.rewards.subtitle}
             </span>
             <h2 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
@@ -859,7 +1019,7 @@ export default function VGamingPage() {
             </p>
 
             {/* Quote Block */}
-            <blockquote className="relative mb-12 max-w-2xl mx-auto">
+            <blockquote className="relative mb-20 max-w-2xl mx-auto">
               <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border-l-4 border-primary pl-8 pr-8 py-6 rounded-r-lg shadow-lg">
                 <p className="font-[family-name:var(--font-orbitron)] text-2xl md:text-3xl font-bold text-primary italic mb-4">
                   {t.rewards.quote}
@@ -871,11 +1031,94 @@ export default function VGamingPage() {
             </blockquote>
           </div>
         </div>
+        {/* Registration Fees Section */}
+        <div className="mb-8 bg-gradient-to-br from-primary/15 to-secondary/15 rounded-2xl border border-primary/30 p-6 md:p-8 max-w-[70%] mx-auto">
+          <h3 className="font-[family-name:var(--font-orbitron)] text-2xl font-bold text-primary mb-2">
+            {t.challenge.registrationFees.title}
+          </h3>
+          <p className="text-foreground/70 mb-6">
+            {t.challenge.registrationFees.subtitle}
+          </p>
+          <p className="text-sm text-foreground/60 mb-6">
+            {t.challenge.registrationFees.description}
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* FC26 Fees */}
+            <div className="bg-card/60 rounded-lg border border-border p-4 hover:border-primary/40 transition-colors">
+              <h4 className="font-bold text-lg text-primary mb-4">
+                {t.challenge.registrationFees.categories.fc26.title}
+              </h4>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-foreground/70">
+                    {t.challenge.registrationFees.categories.fc26.amateur.level}
+                  </span>
+                  <span className="font-bold text-green-500">
+                    {t.challenge.registrationFees.categories.fc26.amateur.fee}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-foreground/70">
+                    {
+                      t.challenge.registrationFees.categories.fc26.professional
+                        .level
+                    }
+                  </span>
+                  <span className="font-bold text-amber-500">
+                    {
+                      t.challenge.registrationFees.categories.fc26.professional
+                        .fee
+                    }
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Billiards Fees */}
+            <div className="bg-card/60 rounded-lg border border-border p-4 hover:border-primary/40 transition-colors">
+              <h4 className="font-bold text-lg text-primary mb-4">
+                {t.challenge.registrationFees.categories.billiard.title}
+              </h4>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-foreground/70">
+                    {
+                      t.challenge.registrationFees.categories.billiard.amateur
+                        .level
+                    }
+                  </span>
+                  <span className="font-bold text-green-500">
+                    {
+                      t.challenge.registrationFees.categories.billiard.amateur
+                        .fee
+                    }
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-foreground/70">
+                    {
+                      t.challenge.registrationFees.categories.billiard
+                        .professional.level
+                    }
+                  </span>
+                  <span className="font-bold text-red-500">
+                    {
+                      t.challenge.registrationFees.categories.billiard
+                        .professional.fee
+                    }
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
+
       {/* Challenge Registration Section */}
       <section
-        id="challenge"
-        className="py-20 md:py-25 bg-gradient-to-b from-card to-background relative overflow-hidden"
+        id="contact"
+        className="pt-15 pb-30 bg-gradient-to-b from-card to-background relative overflow-hidden"
       >
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
@@ -892,7 +1135,7 @@ export default function VGamingPage() {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
             {/* Info Section */}
             <div className="scroll-animate opacity-0 translate-y-10 transition-all duration-700">
-              <span className="inline-block px-4 py-2 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
+              <span className="inline-block px-4 py-1 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
                 {t.challenge.subtitle}
               </span>
               <h2 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
@@ -954,6 +1197,7 @@ export default function VGamingPage() {
 
             {/* Registration Form */}
             <div className="scroll-animate opacity-0 translate-y-10 transition-all duration-700 delay-200">
+              {/* Registration Form */}
               <form
                 onSubmit={handleSubmit}
                 className="bg-card/50 backdrop-blur-sm rounded-2xl border border-border p-6 md:p-8 shadow-xl"
@@ -1032,6 +1276,23 @@ export default function VGamingPage() {
                     </div>
                   </div>
 
+                  {/* Phone */}
+                  <div>
+                    <label className="block text-sm font-medium text-foreground/80 mb-2">
+                      {t.challenge.form.phone} *
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={formData.phone}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
+                      className="w-full px-4 py-3 rounded-xl bg-input border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground placeholder:text-muted-foreground"
+                      placeholder="+237 6XX XXX XXX"
+                    />
+                  </div>
+
                   {/* How Heard */}
                   <div>
                     <label className="block text-sm font-medium text-foreground/80 mb-2">
@@ -1091,40 +1352,6 @@ export default function VGamingPage() {
                     </div>
                   )}
 
-                  {/* Categories Selection */}
-                  <div>
-                    <label className="block text-sm font-medium text-foreground/80 mb-2">
-                      {t.challenge.form.categories} *
-                    </label>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      {t.challenge.form.categoriesHint}
-                    </p>
-                    <div className="grid grid-cols-2 gap-3">
-                      {Object.entries(t.challenge.categoryOptions).map(
-                        ([key, label]) => (
-                          <label
-                            key={key}
-                            className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                              formData.categories.includes(key)
-                                ? "bg-primary/20 border-primary"
-                                : "bg-input border-border hover:border-primary/50"
-                            }`}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={formData.categories.includes(key)}
-                              onChange={() => handleCategoryChange(key)}
-                              className="w-5 h-5 text-primary accent-primary"
-                            />
-                            <span className="text-foreground/80 text-sm font-medium">
-                              {label}
-                            </span>
-                          </label>
-                        ),
-                      )}
-                    </div>
-                  </div>
-
                   {/* Photo Upload */}
                   <div>
                     <label className="block text-sm font-medium text-foreground/80 mb-2">
@@ -1137,6 +1364,7 @@ export default function VGamingPage() {
                       {photoPreview ? (
                         <div className="relative w-24 h-24 mx-auto rounded-full overflow-hidden">
                           <Image
+                            key={photoPreview}
                             src={photoPreview}
                             alt="Preview"
                             fill
@@ -1161,21 +1389,40 @@ export default function VGamingPage() {
                     </div>
                   </div>
 
-                  {/* Phone */}
+                  {/* Categories Selection */}
                   <div>
                     <label className="block text-sm font-medium text-foreground/80 mb-2">
-                      {t.challenge.form.phone} *
+                      {t.challenge.form.categories} *
                     </label>
-                    <input
-                      type="tel"
-                      required
-                      value={formData.phone}
-                      onChange={(e) =>
-                        setFormData({ ...formData, phone: e.target.value })
-                      }
-                      className="w-full px-4 py-3 rounded-xl bg-input border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground placeholder:text-muted-foreground"
-                      placeholder="+237 6XX XXX XXX"
-                    />
+                    <p className="text-xs text-muted-foreground mb-3">
+                      {t.challenge.form.categoriesHint}
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {Object.entries(t.challenge.categoryOptions).map(
+                        ([key, label]) => (
+                          <label
+                            key={key}
+                            className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                              formData.category === key
+                                ? "bg-primary/20 border-primary"
+                                : "bg-input border-border hover:border-primary/50"
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="category"
+                              value={key}
+                              checked={formData.category === key}
+                              onChange={() => handleCategoryChange(key)}
+                              className="w-5 h-5 text-primary accent-primary"
+                            />
+                            <span className="text-foreground/80 text-sm font-medium">
+                              {label}
+                            </span>
+                          </label>
+                        ),
+                      )}
+                    </div>
                   </div>
 
                   {/* Player Level */}
@@ -1216,6 +1463,17 @@ export default function VGamingPage() {
                       </label>
                     </div>
                   </div>
+
+                  {/* Registration Fee Message */}
+                  {getRegistrationFee() && (
+                    <div className="bg-primary/10 border border-primary/30 rounded-xl p-4">
+                      <p className="text-sm text-foreground/80">
+                        {lang === "en"
+                          ? `Registration fee: ${(getRegistrationFee() as any)?.fee} for ${formData.level} ${t.challenge.categoryOptions[formData.category as keyof typeof t.challenge.categoryOptions]}`
+                          : `Frais d'inscription : ${(getRegistrationFee() as any)?.fee} pour ${formData.level} ${t.challenge.categoryOptions[formData.category as keyof typeof t.challenge.categoryOptions]}`}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Has Team */}
                   <div>
@@ -1262,10 +1520,36 @@ export default function VGamingPage() {
                     </div>
                   </div>
 
+                  {/* Consent Checkbox */}
+                  {getRegistrationFee() && (
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        id="consent"
+                        checked={formData.consent}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            consent: e.target.checked,
+                          })
+                        }
+                        className="w-5 h-5 text-primary accent-primary mt-0.5"
+                      />
+                      <label
+                        htmlFor="consent"
+                        className="text-xs text-foreground/80 cursor-pointer opacity-80 leading-relaxed"
+                      >
+                        {lang === "en"
+                          ? `I agree to pay ${(getRegistrationFee() as any)?.fee} including withdrawal fee for ${t.challenge.categoryOptions[formData.category as keyof typeof t.challenge.categoryOptions]} without which I will not be part of the challenge.`
+                          : `J'accepte de payer ${(getRegistrationFee() as any)?.fee} frais de retrait inclus pour ${t.challenge.categoryOptions[formData.category as keyof typeof t.challenge.categoryOptions]} sans lequel je ne pourrai pas participer au challenge.`}
+                      </label>
+                    </div>
+                  )}
+
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !formData.consent}
                     className="w-full py-4 bg-primary text-primary-foreground font-bold text-lg rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
                   >
                     {isSubmitting

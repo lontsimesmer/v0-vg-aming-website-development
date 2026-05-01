@@ -19,6 +19,50 @@ const isSupabaseConfigValid = () => {
   return isValidUrl(url) && key !== "";
 };
 
+const uploadPhotoToStorage = async (
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  photoData: string,
+) => {
+  if (!photoData || !photoData.startsWith("data:image/")) {
+    return photoData;
+  }
+
+  const match = photoData.match(/^data:(image\/(png|jpe?g));base64,(.+)$/);
+  if (!match) {
+    return photoData;
+  }
+
+  const mime = match[1];
+  const extension =
+    mime === "image/jpeg" || mime === "image/jpg" ? "jpg" : "png";
+  const fileData = Buffer.from(match[3], "base64");
+  const fileName = `enrollment-photos/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${extension}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("uploads")
+    .upload(fileName, fileData, {
+      contentType: mime,
+      upsert: false,
+    });
+
+  if (uploadError) {
+    console.error("[v0] Storage upload error:", uploadError);
+    return photoData;
+  }
+
+  const publicUrlResult = supabase.storage
+    .from("uploads")
+    .getPublicUrl(fileName);
+  const publicUrl = publicUrlResult.data?.publicUrl;
+
+  if (!publicUrl) {
+    console.error("[v0] Storage public URL error:", publicUrlResult);
+    return photoData;
+  }
+
+  return publicUrl;
+};
+
 export async function POST(request: NextRequest) {
   try {
     console.log("[v0] POST /api/enrollment called");
@@ -39,6 +83,11 @@ export async function POST(request: NextRequest) {
     console.log("[v0] Received data:", Object.keys(data));
 
     // Insert enrollment into database
+    let photoUrl: string | null = null;
+    if (data.photo) {
+      photoUrl = await uploadPhotoToStorage(supabase, data.photo);
+    }
+
     const { data: enrollment, error: enrollmentError } = await supabase
       .from("enrollments")
       .insert({
@@ -48,7 +97,7 @@ export async function POST(request: NextRequest) {
         birth_place: data.birthPlace,
         how_heard: data.howHeard,
         how_heard_source: data.howHeardSource,
-        photo_url: data.photo ? "photo_attached" : null,
+        photo_url: photoUrl,
         phone: data.phone,
         level: data.level,
         has_team: data.hasTeam,
@@ -81,7 +130,7 @@ export async function POST(request: NextRequest) {
       birthPlace: data.birthPlace,
       howHeard: data.howHeard,
       howHeardSource: data.howHeardSource,
-      photo: data.photo,
+      photo: photoUrl ?? data.photo,
       phone: data.phone,
       level: data.level,
       hasTeam: data.hasTeam,

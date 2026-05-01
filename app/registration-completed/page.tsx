@@ -5,33 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { CheckCircle, ArrowLeft, Globe } from "lucide-react";
 
-const whatsappLinks = {
-  fc26: "https://chat.whatsapp.com/GL4UyhuqkSrAfJQ49rrSjs?mode=gi_t",
-  billiard: "https://chat.whatsapp.com/Jbfzaf69EVv2dpXhxsiaii?mode=gi_t",
-};
-
-const categoryNames = {
-  en: {
-    fc26: "FC26",
-    billiard: "Billiard",
-  },
-  fr: {
-    fc26: "FC26",
-    billiard: "Billard",
-  },
-};
-
 const translations = {
   en: {
     title: "Registration Completed!",
     subtitle: "Welcome to the VGaming Battle Arena",
-    message: "Your registration and payment have been successfully processed.",
-    whatsappTitle: "Join Your WhatsApp Group",
-    whatsappMessageSingle:
-      "Click the button below to join your {{category}} WhatsApp group for updates, announcements, and coordination with other players.",
-    whatsappMessageMultiple:
-      "You have registered for multiple categories. Click the buttons below to join the WhatsApp groups for each category.",
-    joinGroup: "Join {{category}} WhatsApp Group",
+    message:
+      "Your registration and payment have been successfully processed. Our team will invite you to join the WhatsApp group corresponding to your selected category.",
     backHome: "Back to Home",
     contact: "For any questions, contact us at:",
     phone: "+237 6 95 95 21 66",
@@ -40,45 +19,20 @@ const translations = {
   fr: {
     title: "Inscription Terminée!",
     subtitle: "Bienvenue au VGaming Battle Arena",
-    message: "Votre inscription et paiement ont été traités avec succès.",
-    whatsappTitle: "Rejoignez Votre Groupe WhatsApp",
-    whatsappMessageSingle:
-      "Cliquez sur le bouton ci-dessous pour rejoindre le groupe WhatsApp {{category}} pour les mises à jour, annonces et coordination avec les autres joueurs.",
-    whatsappMessageMultiple:
-      "Vous vous êtes inscrit pour plusieurs catégories. Cliquez sur les boutons ci-dessous pour rejoindre les groupes WhatsApp de chaque catégorie.",
-    joinGroup: "Rejoindre le Groupe WhatsApp {{category}}",
+    message:
+      "Votre inscription et votre paiement ont bien été enregistrés. Notre équipe vous invitera à rejoindre le groupe WhatsApp correspondant à la catégorie que vous avez choisie.",
     backHome: "Retour à l'Accueil",
     contact: "Pour toute question, contactez-nous au:",
     phone: "+237 6 95 95 21 66",
-    congratulations: "Félicitations d'avoir rejoint le tournoi!",
+    congratulations: "Félicitations pour avoir rejoint le tournoi!",
   },
 };
 
 export default function RegistrationCompletedPage() {
   const [lang, setLang] = useState<"en" | "fr">("fr");
-  const [paymentData, setPaymentData] = useState<any>(null);
-  const [categories, setCategories] = useState<string[]>([]);
   const t = translations[lang];
 
   useEffect(() => {
-    // Get payment data from localStorage
-    const data = localStorage.getItem("vgaming-payment");
-    if (data) {
-      const parsedData = JSON.parse(data);
-      setPaymentData(parsedData);
-
-      // Extract categories
-      if (parsedData.categories) {
-        const categoriesList =
-          typeof parsedData.categories === "string"
-            ? parsedData.categories.split(", ")
-            : Array.isArray(parsedData.categories)
-              ? parsedData.categories
-              : [];
-        setCategories(categoriesList);
-      }
-    }
-
     // Check saved language
     const savedLang = localStorage.getItem("vgaming-lang") as
       | "en"
@@ -129,77 +83,13 @@ export default function RegistrationCompletedPage() {
         </div>
       </div>
 
-      {/* WhatsApp Group Section */}
+      {/* Registration Success Message */}
       <div className="px-4 pb-8">
         <div className="max-w-2xl mx-auto">
           <div className="bg-card/50 backdrop-blur-sm rounded-2xl border border-border p-6 md:p-8 shadow-xl text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center">
-              <img src="/images/social.png" alt="whatsapp" className="" />
-            </div>
-
-            <h2 className="text-2xl font-bold mb-4">{t.whatsappTitle}</h2>
-
-            {categories.length === 0 ? (
-              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                {t.whatsappMessageSingle.replace(
-                  "{{category}}",
-                  "your tournament",
-                )}
-              </p>
-            ) : categories.length === 1 ? (
-              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                {t.whatsappMessageSingle.replace(
-                  "{{category}}",
-                  categoryNames[lang][
-                    categories[0] as keyof (typeof categoryNames)["en"]
-                  ] || categories[0],
-                )}
-              </p>
-            ) : (
-              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                {t.whatsappMessageMultiple}
-              </p>
-            )}
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {categories.length === 0 ? (
-                <a
-                  href={whatsappLinks.fc26}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 px-8 py-4 bg-green-600 text-white font-bold text-lg rounded-xl hover:bg-green-700 transition-all duration-300 shadow-lg shadow-green-600/25 hover:shadow-green-600/40 hover:scale-[1.02]"
-                >
-                  {t.joinGroup}
-                </a>
-              ) : (
-                categories.map((category) => (
-                  <a
-                    key={category}
-                    href={whatsappLinks[category as keyof typeof whatsappLinks]}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-3 px-8 py-4 bg-green-600 text-white font-bold text-lg rounded-xl hover:bg-green-700 transition-all duration-300 shadow-lg shadow-green-600/25 hover:shadow-green-600/40 hover:scale-[1.02]"
-                  >
-                    {t.joinGroup.replace(
-                      "{{category}}",
-                      categoryNames[lang][
-                        category as keyof (typeof categoryNames)["en"]
-                      ] || category,
-                    )}
-                  </a>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Contact Info */}
-      <div className="px-4 pb-8">
-        <div className="max-w-2xl mx-auto text-center">
-          <div className="bg-secondary/30 rounded-xl p-6 border border-border">
-            <p className="text-muted-foreground mb-2">{t.contact}</p>
-            <p className="font-semibold text-foreground">{t.phone}</p>
+            <p className="text-foreground font-semibold">
+              {t.contact} {t.phone}
+            </p>
           </div>
         </div>
       </div>

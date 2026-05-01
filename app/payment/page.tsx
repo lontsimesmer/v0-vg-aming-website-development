@@ -88,6 +88,7 @@ export default function PaymentPage() {
   const [paymentMethod, setPaymentMethod] = useState<"mtn" | "orange">("mtn");
   const [isProcessing, setIsProcessing] = useState(false);
   const [screenshotSent, setScreenshotSent] = useState(false);
+  const [isWhatsappLoading, setIsWhatsappLoading] = useState(false);
   const [selectedImagePopup, setSelectedImagePopup] = useState<
     "mtn" | "orange" | null
   >(null);
@@ -130,16 +131,21 @@ export default function PaymentPage() {
   };
   // Handle WhatsApp button click
   const handleWhatsAppClick = () => {
+    if (isWhatsappLoading || screenshotSent) return;
+    setIsWhatsappLoading(true);
+
     const message = encodeURIComponent(
       lang === "en"
         ? "Hello, I have completed my payment for VGaming registration. Please find my proof attached."
         : "Bonjour, j'ai complété mon paiement pour l'inscription VGaming. Veuillez trouver ma preuve ci-jointe.",
     );
     const whatsappUrl = `https://wa.me/237695952166?text=${message}`;
-    window.open(whatsappUrl, "_blank");
 
-    // Mark screenshot as sent
-    setScreenshotSent(true);
+    setTimeout(() => {
+      window.open(whatsappUrl, "_blank");
+      setScreenshotSent(true);
+      setIsWhatsappLoading(false);
+    }, 1000);
   };
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -248,6 +254,14 @@ export default function PaymentPage() {
   const fee = calculateFee();
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {isWhatsappLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Loading...</p>
+          </div>
+        </div>
+      )}
       {/* Language Toggle */}
       <div className="absolute top-4 right-4 z-10">
         <button

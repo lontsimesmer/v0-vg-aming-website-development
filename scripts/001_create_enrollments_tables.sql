@@ -46,10 +46,20 @@ CREATE POLICY "allow_public_insert_ghl_logs" ON public.ghl_execution_logs
 CREATE POLICY "allow_public_select_ghl_logs" ON public.ghl_execution_logs 
   FOR SELECT USING (true);
 
--- Create indexes for better query performance
+-- Enhanced indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_enrollments_created_at ON public.enrollments(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_ghl_logs_enrollment_id ON public.ghl_execution_logs(enrollment_id);
 CREATE INDEX IF NOT EXISTS idx_ghl_logs_executed_at ON public.ghl_execution_logs(executed_at DESC);
+-- Add composite index for enrollment with logs
+CREATE INDEX IF NOT EXISTS idx_enrollments_with_logs 
+  ON public.enrollments(created_at DESC) 
+  INCLUDE (id);
+-- Optimize foreign key lookups
+ALTER TABLE public.ghl_execution_logs
+  ADD CONSTRAINT fk_ghl_enrollment 
+  FOREIGN KEY (enrollment_id) 
+  REFERENCES public.enrollments(id) 
+  ON DELETE CASCADE;
 
 -- Check table exists
 SELECT EXISTS (

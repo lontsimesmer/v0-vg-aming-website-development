@@ -119,6 +119,7 @@ const translations = {
       services: "Disciplines",
       challenge: "Challenge",
       contact: "Contact",
+      signUp: "Sign Up",
     },
     hero: {
       title: "VGaming Grand Tournament",
@@ -261,6 +262,7 @@ const translations = {
       services: "Disciplines",
       challenge: "Défi",
       contact: "Contact",
+      signUp: "S'inscrire",
     },
     hero: {
       title: "Grand Tournoi VGaming",
@@ -680,7 +682,7 @@ export default function VGamingPage() {
               </a>
             </div>
 
-            {/* Language Toggle, Contact Button & Mobile Menu */}
+            {/* Language Toggle & Mobile Menu */}
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setLang(lang === "en" ? "fr" : "en")}
@@ -693,9 +695,9 @@ export default function VGamingPage() {
               </button>
               <a
                 href="#contact"
-                className="inline-flex items-center justify-center px-4 py-2 rounded-full border border-primary/30 bg-primary/5 text-sm font-medium text-primary hover:bg-primary/10 transition-all"
+                className="hidden md:inline-flex items-center justify-center px-4 py-2 rounded-full border border-primary/30 bg-primary/5 text-sm font-medium text-primary hover:bg-primary/10 transition-all"
               >
-                Contact us
+                {t.nav.signUp}
               </a>
 
               <button
@@ -748,9 +750,9 @@ export default function VGamingPage() {
             <a
               href="#contact"
               onClick={() => setMobileMenuOpen(false)}
-              className="block text-lg text-foreground/80 hover:text-primary transition-colors"
+              className="block text-lg text-foreground/80 hover:text-primary transition-colors font-semibold"
             >
-              {t.nav.contact}
+              {t.nav.signUp}
             </a>
           </div>
         </div>
@@ -782,7 +784,7 @@ export default function VGamingPage() {
         {/* Hero Content */}
         <div className="relative z-10 text-center px-3 max-w-3xl mx-auto">
           <div className="animate-fade-in-up">
-            <span className="inline-block px-5 py-1 rounded-full bg-secondary/40 backdrop-blur-sm border border-primary/40 text-primary text-sm md:text-base mb-6 font-semibold tracking-wide shadow-lg">
+            <span className="inline-block px-3 py-0.5 rounded-full bg-secondary/40 backdrop-blur-sm border border-primary/40 text-primary text-xs sm:text-sm md:text-base mb-4 sm:mb-6 font-semibold tracking-wide shadow-lg">
               BATTLE ARENA - COMING SOON
             </span>
           </div>
@@ -797,7 +799,7 @@ export default function VGamingPage() {
             />
           </div>
 
-          <h2 className="font-[family-name:var(--font-orbitron)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-10 animate-fade-in-up animation-delay-300">
+          <h2 className="font-[family-name:var(--font-orbitron)] text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold text-foreground mb-10 animate-fade-in-up animation-delay-300">
             <TypingText
               texts={[
                 lang === "en"
@@ -810,7 +812,7 @@ export default function VGamingPage() {
               ]}
               speed={50}
               deleteSpeed={30}
-              delayBetween={2500}
+              delayBetween={2000}
             />
           </h2>
 
@@ -870,10 +872,10 @@ export default function VGamingPage() {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Text Content */}
             <div className="scroll-animate opacity-0 translate-y-10 transition-all duration-700">
-              <span className="inline-block px-4 py-1.5 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
+              <span className="inline-block px-3 py-1 rounded-full bg-primary/15 text-primary text-xs sm:text-sm font-medium mb-4 border border-primary/20">
                 {t.about.subtitle}
               </span>
-              <h2 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+              <h2 className="font-[family-name:var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
                 {t.about.title}
               </h2>
               <p className="text-foreground/70 text-lg leading-relaxed mb-6">
@@ -962,10 +964,10 @@ export default function VGamingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-16 scroll-animate opacity-0 translate-y-10 transition-all duration-700">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
+            <span className="inline-block px-3 py-1 rounded-full bg-primary/15 text-primary text-xs sm:text-sm font-medium mb-4 border border-primary/20">
               {t.services.subtitle}
             </span>
-            <h2 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-4xl lg:text-5xl font-bold">
+            <h2 className="font-[family-name:var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">
               {t.services.title}
             </h2>
           </div>
@@ -993,7 +995,7 @@ export default function VGamingPage() {
       {/* Rewards Section */}
       <section
         id="challenge"
-        className="py-20 md:py-22 bg-gradient-to-b from-background to-card relative overflow-hidden"
+        className="py-16 md:py-20 bg-gradient-to-b from-background to-card relative overflow-hidden"
       >
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
@@ -1008,10 +1010,10 @@ export default function VGamingPage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center scroll-animate opacity-0 translate-y-10 transition-all duration-700">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
+            <span className="inline-block px-3 py-1 rounded-full bg-primary/15 text-primary text-xs sm:text-sm font-medium mb-4 border border-primary/20">
               {t.rewards.subtitle}
             </span>
-            <h2 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+            <h2 className="font-[family-name:var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
               {t.rewards.title}
             </h2>
             <p className="text-foreground/70 text-lg leading-relaxed mb-8 max-w-3xl mx-auto">
@@ -1032,7 +1034,7 @@ export default function VGamingPage() {
           </div>
         </div>
         {/* Registration Fees Section */}
-        <div className="mb-8 bg-gradient-to-br from-primary/15 to-secondary/15 rounded-2xl border border-primary/30 p-6 md:p-8 max-w-[70%] mx-auto">
+        <div className="mb-4 md:mb-8 bg-gradient-to-br from-primary/15 to-secondary/15 rounded-2xl border border-primary/30 p-6 md:p-8 max-w-[90vw] mx-auto">
           <h3 className="font-[family-name:var(--font-orbitron)] text-2xl font-bold text-primary mb-2">
             {t.challenge.registrationFees.title}
           </h3>
@@ -1135,10 +1137,10 @@ export default function VGamingPage() {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
             {/* Info Section */}
             <div className="scroll-animate opacity-0 translate-y-10 transition-all duration-700">
-              <span className="inline-block px-4 py-1 rounded-full bg-primary/15 text-primary text-sm font-medium mb-4 border border-primary/20">
+              <span className="inline-block px-3 py-1 rounded-full bg-primary/15 text-primary text-xs sm:text-sm font-medium mb-4 border border-primary/20">
                 {t.challenge.subtitle}
               </span>
-              <h2 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+              <h2 className="font-[family-name:var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
                 {t.challenge.title}
               </h2>
               <p className="text-foreground/70 text-lg leading-relaxed mb-8">

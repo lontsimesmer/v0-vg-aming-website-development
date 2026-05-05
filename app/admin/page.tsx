@@ -53,6 +53,7 @@ interface Enrollment {
   photo_url: string | null;
   created_at: string;
   ghl_execution_logs: GHLLog[];
+  ghl_status?: "synced" | "failed" | "pending";
 }
 
 interface EnrollmentStats {
@@ -86,17 +87,26 @@ export default function AdminPage() {
   });
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [retryingIds, setRetryingIds] = useState<string[]>([]);
   const [editingEnrollment, setEditingEnrollment] = useState<Enrollment | null>(
     null,
   );
   const [editForm, setEditForm] = useState<Partial<Enrollment>>({});
 
-  const getEnrollmentStatus = (enrollment: Enrollment) => {
-    const latestLog = enrollment.ghl_execution_logs[0];
-    if (!latestLog) {
-      return "pending" as const;
+  const getEnrollmentStatus = (enrollment: Enrollment): StatusFilter => {
+    if (enrollment.ghl_status) {
+      return enrollment.ghl_status;
     }
-    return latestLog.success ? "synced" : "failed";
+
+    const logs = enrollment.ghl_execution_logs || [];
+    if (logs.length === 0) {
+      return "pending";
+    }
+
+    const latestLog = logs[0];
+    const latestSuccess = latestLog.success === true;
+
+    return latestSuccess ? "synced" : "failed";
   };
 
   const filteredEnrollments = enrollments.filter((enrollment) => {
@@ -109,6 +119,11 @@ export default function AdminPage() {
     filteredEnrollments.every((enrollment) =>
       selectedIds.includes(enrollment.id),
     );
+
+  const selectedFailedIds = selectedIds.filter((id) => {
+    const enrollment = enrollments.find((item) => item.id === id);
+    return enrollment && getEnrollmentStatus(enrollment) === "failed";
+  });
 
   const toggleSelectAll = () => {
     if (isAllSelected) {
@@ -127,13 +142,18 @@ export default function AdminPage() {
     );
   };
 
-  const fetchEnrollments = async (pageNum: number = 1) => {
+  const fetchEnrollments = async (
+    pageNum: number = 1,
+    status: StatusFilter = "all",
+  ) => {
     try {
       setLoading(true);
+      const limit = status === "all" ? 50 : 10000;
+      const statusParam = status === "all" ? "" : `&status=${status}`;
       const response = await fetchWithTimeout(
-        `/api/enrollment?page=${pageNum}&limit=50`,
+        `/api/enrollment?page=${pageNum}&limit=${limit}${statusParam}`,
         { method: "GET" },
-        30000, // 30 second timeout
+        20000,
       );
       if (!response.ok) {
         let errorDetail = "Failed to fetch enrollments";
@@ -233,6 +253,56 @@ export default function AdminPage() {
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRetrySync = async (ids: string[]) => {
+    if (ids.length === 0) {
+      return;
+    }
+
+    setLoading(true);
+    setRetryingIds(ids);
+    try {
+      const response = await fetchWithTimeout(
+        "/api/enrollment/resend-ghl",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ids }),
+        },
+        30000,
+      );
+
+      if (!response.ok) {
+        let errorDetail = "Failed to resend failed enrollments to GHL";
+        try {
+          const errorResponse = await response.json();
+          errorDetail = errorResponse.error || errorDetail;
+        } catch {
+          // keep default
+        }
+        throw new Error(errorDetail);
+      }
+
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(
+          data.error || "Failed to resend failed enrollments to GHL",
+        );
+      }
+
+      await fetchEnrollments(page);
+      setError(null);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Could not retry failed synchronization",
+      );
+    } finally {
+      setLoading(false);
+      setRetryingIds([]);
     }
   };
 
@@ -347,7 +417,7 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    fetchEnrollments(1);
+    fetchEnrollments(1, statusFilter);
   }, []);
 
   // Pagination controls in JSX (add after stats section)
@@ -360,7 +430,7 @@ export default function AdminPage() {
       </div>
       <div className="flex gap-2">
         <button
-          onClick={() => fetchEnrollments(page - 1)}
+          onClick={() => fetchEnrollments(page - 1, statusFilter)}
           disabled={page === 1 || loading}
           className="px-3 py-1 bg-primary text-secondary rounded disabled:opacity-50"
         >
@@ -370,7 +440,7 @@ export default function AdminPage() {
           Page {page} of {pagination.totalPages}
         </span>
         <button
-          onClick={() => fetchEnrollments(page + 1)}
+          onClick={() => fetchEnrollments(page + 1, statusFilter)}
           disabled={page >= pagination.totalPages || loading}
           className="px-3 py-1 bg-primary text-secondary rounded disabled:opacity-50"
         >
@@ -466,7 +536,10 @@ export default function AdminPage() {
                   <button
                     key={filter}
                     type="button"
-                    onClick={() => setStatusFilter(filter)}
+                    onClick={() => {
+                      setStatusFilter(filter);
+                      fetchEnrollments(1, filter);
+                    }}
                     className={`rounded-full px-4 py-2 text-sm border transition ${active ? "bg-primary text-secondary border-primary" : "bg-card text-foreground border-border hover:bg-muted"}`}
                   >
                     {label}
@@ -496,6 +569,16 @@ export default function AdminPage() {
               >
                 Delete
               </button>
+              {selectedFailedIds.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => handleRetrySync(selectedFailedIds)}
+                  disabled={loading}
+                  className="rounded-lg px-4 py-2 text-sm border border-border bg-background text-blue-600 hover:bg-blue-500/10 disabled:opacity-50"
+                >
+                  Retry Failed ({selectedFailedIds.length})
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -665,7 +748,7 @@ export default function AdminPage() {
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => fetchEnrollments(page)}
+                  onClick={() => fetchEnrollments(page, statusFilter)}
                   disabled={loading}
                   className="px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground hover:bg-muted/70"
                 >
@@ -674,8 +757,8 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="bg-card rounded-xl border border-border overflow-hidden">
-              <Table className="min-w-[1000px]">
+            <div className="bg-card rounded-xl border border-border overflow-x-auto">
+              <Table className="min-w-full w-full">
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-12">
@@ -738,7 +821,7 @@ export default function AdminPage() {
                               className="border-1 border-primary"
                             />
                           </TableCell>
-                          <TableCell className="font-medium">
+                          <TableCell className="font-medium whitespace-nowrap">
                             {enrollment.full_name}
                           </TableCell>
                           <TableCell>{enrollment.pseudo || "—"}</TableCell>
@@ -775,6 +858,19 @@ export default function AdminPage() {
                               >
                                 <Trash2 className="w-4 h-4 text-red-500" />
                               </button>
+                              {status === "failed" && (
+                                <button
+                                  type="button"
+                                  disabled={loading}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleRetrySync([enrollment.id]);
+                                  }}
+                                  className="rounded-lg p-2 border border-border bg-background text-blue-600 hover:bg-blue-500/10 disabled:opacity-50"
+                                >
+                                  Retry GHL
+                                </button>
+                              )}
                             </div>
                           </TableCell>
                         </TableRow>

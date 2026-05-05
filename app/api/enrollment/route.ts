@@ -316,11 +316,20 @@ export async function GET(request: NextRequest) {
       parseInt(searchParams.get("limit") || "50", 10),
       100,
     );
+    const statusFilter = (searchParams.get("status") || "all") as
+      | "all"
+      | "synced"
+      | "failed"
+      | "pending";
     const offset = (page - 1) * limit;
     console.log(
-      `[v0] Fetching enrollments: page=${page}, limit=${limit}, offset=${offset}`,
+      `[v0] Fetching enrollments: page=${page}, limit=${limit}, offset=${offset}, status=${statusFilter}`,
     );
-    // First, fetch enrollments with pagination
+
+    const shouldFetchAllForStatus = statusFilter !== "all";
+    const queryRangeStart = shouldFetchAllForStatus ? 0 : offset;
+    const queryRangeEnd = shouldFetchAllForStatus ? 9999 : offset + limit - 1;
+
     const {
       data: enrollmentsData,
       error: enrollmentsError,
@@ -347,7 +356,7 @@ export async function GET(request: NextRequest) {
         { count: "exact" },
       )
       .order("created_at", { ascending: false })
-      .range(offset, offset + limit - 1);
+      .range(queryRangeStart, queryRangeEnd);
 
     if (enrollmentsError) {
       console.error("[v0] Supabase query error:", enrollmentsError);
@@ -369,10 +378,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get enrollment IDs for the current page
+    // Get enrollment IDs for the current dataset
     const enrollmentIds = enrollmentsData.map((e) => e.id);
 
-    // Fetch the GHL logs for enrollments in the current page only
+    // Fetch the GHL logs for the enrollments we retrieved
     let logsData: any[] | null = [];
     let logsError: any = null;
 
@@ -419,6 +428,13 @@ export async function GET(request: NextRequest) {
         }
         logsByEnrollment[log.enrollment_id].push(log);
       }
+      for (const enrollmentId of Object.keys(logsByEnrollment)) {
+        logsByEnrollment[enrollmentId].sort(
+          (a, b) =>
+            new Date(b.executed_at).getTime() -
+            new Date(a.executed_at).getTime(),
+        );
+      }
     }
     console.log(
       `[v0] Grouped logs: ${Object.keys(logsByEnrollment).length} enrollments have logs`,
@@ -459,18 +475,41 @@ export async function GET(request: NextRequest) {
 
     // Calculate pending: enrollments with no logs at all
     const totalPending = (count || 0) - totalSuccessful - totalFailed;
-    const enrollments = enrollmentsData.map((enrollment) => ({
-      ...enrollment,
-      ghl_execution_logs: logsByEnrollment[enrollment.id] || [],
-    }));
-    console.log(`[v0] Successfully fetched ${enrollments.length} enrollments`);
+    const enrollments = enrollmentsData.map((enrollment) => {
+      const logs = logsByEnrollment[enrollment.id] || [];
+      const ghl_status = logs.length
+        ? logs[0].success === true
+          ? "synced"
+          : "failed"
+        : "pending";
+      return {
+        ...enrollment,
+        ghl_execution_logs: logs,
+        ghl_status,
+      };
+    });
+
+    const filteredEnrollments =
+      statusFilter === "all"
+        ? enrollments
+        : enrollments.filter(
+            (enrollment) => enrollment.ghl_status === statusFilter,
+          );
+
+    const pagedEnrollments = filteredEnrollments.slice(offset, offset + limit);
+
+    const totalFiltered =
+      statusFilter === "all" ? count || 0 : filteredEnrollments.length;
+    console.log(
+      `[v0] Successfully fetched ${pagedEnrollments.length} enrollments`,
+    );
     return NextResponse.json({
-      enrollments,
+      enrollments: pagedEnrollments,
       pagination: {
         page,
         limit,
-        total: count,
-        totalPages: Math.ceil((count || 0) / limit),
+        total: totalFiltered,
+        totalPages: Math.max(Math.ceil(totalFiltered / limit), 1),
       },
       stats: {
         totalEnrollments: count || 0,
